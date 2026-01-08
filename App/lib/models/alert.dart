@@ -1,0 +1,63 @@
+class Alert {
+  final int id;
+  final int deviceId;        // FK (logic)
+  final String deviceCode;   // HIỂN THỊ
+  final int userId;
+  final String message;
+  final double? lat;
+  final double? lng;
+  final DateTime createdAt;
+  final String? licensePlate;
+
+  Alert({
+    required this.id,
+    required this.deviceId,
+    required this.deviceCode,
+    required this.userId,
+    required this.message,
+    this.lat,
+    this.lng,
+    required this.createdAt,
+    this.licensePlate,
+  });
+
+  factory Alert.fromJson(Map<String, dynamic> json) {
+    double? latitude;
+    double? longitude;
+
+    // Parse location
+    if (json['location'] != null && json['location'] is Map) {
+      final loc = json['location'] as Map<String, dynamic>;
+      latitude = (loc['lat'] as num?)?.toDouble();
+      longitude = (loc['lng'] as num?)?.toDouble();
+    }
+
+    return Alert(
+      id: json['id'] as int,
+      deviceId: json['deviceId'] as int,          // ✅ luôn int
+      deviceCode: json['deviceCode'] as String,   // ✅ dùng để hiển thị
+      userId: json['userId'] as int,
+      message: json['message'] as String,
+      lat: latitude,
+      lng: longitude,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      licensePlate: json['licensePlate'] as String?,
+    );
+  }
+
+  // Lấy tốc độ từ message (20 hoặc 20.5 km/h)
+  double? get speed {
+    final match = RegExp(r'(\d+(?:\.\d+)?)\s*km/h').firstMatch(message);
+    if (match != null) {
+      return double.tryParse(match.group(1)!);
+    }
+    return null;
+  }
+
+  bool get hasLocation => lat != null && lng != null;
+
+  @override
+  String toString() {
+    return 'Alert{id: $id, deviceCode: $deviceCode, licensePlate: $licensePlate, speed: ${speed}km/h, location: ($lat, $lng), time: $createdAt}';
+  }
+}

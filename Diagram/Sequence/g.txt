@@ -1,0 +1,1 @@
+gửi dữ lieu thiếu phần truy cập db

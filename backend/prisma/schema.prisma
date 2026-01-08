@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  email     String   @unique
+  name      String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  role      Role     @default(User)
+  alerts    Alert[]
+  devices   Device[]
+}
+
+model Device {
+  id                Int           @id @default(autoincrement())
+  userId            Int?
+  deviceId          String        @unique
+  licensePlate      String?       @unique
+  lastSeen          DateTime      @default(now())
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  activatedAt       DateTime?
+  deviceKey         String        @unique
+  isActivated       Boolean       @default(false)
+  vehicleStatus     VehicleStatus @default(Parked)
+  lastSpeedAlert    Boolean       @default(false)
+  buzzerStatus      Boolean       @default(false)
+  alerts            Alert[]
+  user              User?         @relation(fields: [userId], references: [id])
+  sensorData        SensorData[]
+}
+
+model SensorData {
+  id        Int      @id @default(autoincrement())
+  deviceId  Int
+  location  Json?
+  speed     Float?
+  createdAt DateTime @default(now())
+  device    Device   @relation(fields: [deviceId], references: [id])
+}
+
+model Alert {
+  id        Int      @id @default(autoincrement())
+  deviceId  Int
+  userId    Int
+  message   String
+  location  Json?
+  createdAt DateTime @default(now())
+  device    Device   @relation(fields: [deviceId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  User
+  Admin
+}
+
+enum VehicleStatus {
+  Parked
+  Moving
+  Stolen
+}
