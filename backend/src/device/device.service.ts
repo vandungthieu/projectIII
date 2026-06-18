@@ -4,7 +4,7 @@ import { CreateDeviceDto } from "./dto/create-device.dto";
 import { randomBytes } from "crypto";
 import { Prisma } from "@prisma/client";
 import { UpdateDeviceDto } from "./dto/update-device.dto";
-import { MqttClientService } from "src/mqtt/mqtt.client";
+import { normalizeLocation } from "src/common/utils/location.util";
 
 @Injectable()
 export class DeviceService{
@@ -213,9 +213,29 @@ export class DeviceService{
             throw new ForbiddenException('You are not allowed to update this device');
         }
 
+        const updateData: any = {
+            ...dto,
+        };
+
+        if (dto.vehicleStatus === 'Parked') {
+            const parkedLocation = await this.getLatestSensorLocation(id);
+            if (parkedLocation) {
+                updateData.parkedLocation = parkedLocation;
+            } else if (device.parkedLocation) {
+                updateData.parkedLocation = device.parkedLocation;
+            }
+            updateData.suspiciousCount = 0;
+            updateData.lastSpeedAlert = false;
+        }
+
+        if (dto.vehicleStatus && dto.vehicleStatus !== 'Parked') {
+            updateData.suspiciousCount = 0;
+            updateData.lastSpeedAlert = false;
+        }
+
         await this.prisma.device.update({
             where: {id},
-            data: dto
+            data: updateData
         })
         return {message:'Suscess'}
     }
@@ -238,6 +258,20 @@ export class DeviceService{
         });
         
         return {message : 'Xóa thành công'}
+    }
+
+    private async getLatestSensorLocation(deviceId: number) {
+        const latest = await this.prisma.sensorData.findFirst({
+            where: { deviceId },
+            orderBy: { createdAt: 'desc' },
+            select: { location: true },
+        });
+
+        if (!latest?.location) {
+            return null;
+        }
+
+        return normalizeLocation(latest.location);
     }
 
     // get alert by device

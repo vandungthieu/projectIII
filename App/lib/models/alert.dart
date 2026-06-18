@@ -1,7 +1,7 @@
 class Alert {
   final int id;
-  final int deviceId;        // FK (logic)
-  final String deviceCode;   // HIỂN THỊ
+  final int deviceId; // FK (logic)
+  final String deviceCode; // HIỂN THỊ
   final int userId;
   final String message;
   final double? lat;
@@ -28,14 +28,16 @@ class Alert {
     // Parse location
     if (json['location'] != null && json['location'] is Map) {
       final loc = json['location'] as Map<String, dynamic>;
-      latitude = (loc['lat'] as num?)?.toDouble();
-      longitude = (loc['lng'] as num?)?.toDouble();
+      latitude = _parseCoordinate(loc['lat'] ?? loc['latitude']);
+      longitude = _parseCoordinate(
+        loc['lng'] ?? loc['lon'] ?? loc['long'] ?? loc['longitude'],
+      );
     }
 
     return Alert(
       id: json['id'] as int,
-      deviceId: json['deviceId'] as int,          // ✅ luôn int
-      deviceCode: json['deviceCode'] as String,   // ✅ dùng để hiển thị
+      deviceId: json['deviceId'] as int, // ✅ luôn int
+      deviceCode: json['deviceCode'] as String, // ✅ dùng để hiển thị
       userId: json['userId'] as int,
       message: json['message'] as String,
       lat: latitude,
@@ -55,6 +57,12 @@ class Alert {
   }
 
   bool get hasLocation => lat != null && lng != null;
+
+  static double? _parseCoordinate(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
 
   @override
   String toString() {

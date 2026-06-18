@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_project/controller/auth_controller.dart';
+import 'package:mobile_project/utils/app_themes.dart';
 import 'package:mobile_project/view/main_screen.dart';
 import 'package:mobile_project/view/onboarding_screen.dart';
 import 'package:mobile_project/view/signin_screen.dart';
 
-const bool DEV_MODE = true;
+const bool devMode = false;
 
 class SplashScreen extends StatelessWidget {
   SplashScreen({super.key});
@@ -14,181 +15,116 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(milliseconds: 2500),(){
-
-      if (DEV_MODE) {
+    Future.delayed(const Duration(milliseconds: 1600), () {
+      if (devMode) {
         Get.off(() => const OnboardingScreen());
-        //Get.off(() => MainScreen());
         return;
       }
 
-      if(authController.isFirstTime){
-          Get.off(()=> const OnboardingScreen());
-      } else if(authController.isLoggedIn){
-          Get.off(()=> const MainScreen());
-      }else {
-          Get.off(()=>  SigninScreen());
+      if (authController.isFirstTime) {
+        Get.off(() => const OnboardingScreen());
+      } else if (authController.isLoggedIn) {
+        Get.off(() => const MainScreen());
+      } else {
+        Get.off(() => SigninScreen());
       }
     });
 
-
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withValues(alpha: 0.8),
-              Theme.of(context).primaryColor.withValues(alpha: 0.6),
-            ]
-          )
-        ),
-        child:  Stack(
-          children: [
-            Positioned.fill(
-                child: Opacity(opacity: 0.05,
-                child: GridPattern(
-                  color: Colors.white,
-                ),)
-            ),
-
-            // main content
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-
-                  // animated logo
-                  TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 1200),
-                      builder: (context, value, child){
-                        return Transform.scale(
-                          scale: value,
-                          child: Container(
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape : BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
-                                  blurRadius: 20,
-                                  spreadRadius: 2,
-                                  offset: const Offset(0, 4),
-                                )
-                              ]
-                            ),
-                          ),
-                        );
-                      }
-                  ),
-
-                      const SizedBox(height: 32),
-
-                      // animated text
-                      TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0.0, end: 1.0),
-                          duration: const Duration(milliseconds: 1200),
-                          builder: (context, value, child){
-                            return Opacity(opacity: value,
-                            child: Transform.translate(
-                                offset: Offset(0, 20 * (1 - value)),
-                                child : child,
-                            ),
-                            );
-                          },
-                        child: Column(
-                          children: [
-                            Text(
-                              "PROJECT 3",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 4,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-
-                  // bottom tagline
-                  Positioned(
-                    bottom: 48,
-                    left: 0,
-                    right: 0,
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 1200),
-                      builder: (context, value, child){
-                        return Opacity(opacity: value,
-                          child: child,
-                        );
-                      },
-                      child: Text(
-                        'Quản lý xe ',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontSize: 14 ,
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      )
-                    ),
-                  )
-                ],
+        width: double.infinity,
+        decoration: const BoxDecoration(color: AppColors.primary),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _GridPainter(color: Colors.white24),
+                ),
               ),
-            )
-          ],
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 86,
+                      height: 86,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.16),
+                            blurRadius: 24,
+                            offset: const Offset(0, 12),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.shield_outlined,
+                        size: 44,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Chống Trộm Xe',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Theo dõi, cảnh báo và điều khiển từ xa',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.82),
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    const SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class GridPattern extends StatelessWidget {
+class _GridPainter extends CustomPainter {
   final Color color;
-  const GridPattern({
-    Key? key,
-    required this.color,
-  }): super(key: key);
+
+  const _GridPainter({required this.color});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: GridPainter(color: color),
-    );
-  }
-}
-
-class GridPainter extends CustomPainter{
-  final Color color ;
-  GridPainter ({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size){
+  void paint(Canvas canvas, Size size) {
     final paint = Paint()
-    ..color = color
-    ..strokeWidth = 0.5;
+      ..color = color
+      ..strokeWidth = 0.5;
+    const spacing = 24.0;
 
-    final spacing = 20.0;
-
-    for(var i = 0.0 ; i< size.width; i += spacing){
-      canvas.drawLine(Offset(i,0), Offset(i, size.height), paint);
+    for (var x = 0.0; x < size.width; x += spacing) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
 
-    for(var i = 0.0 ; i< size.height; i += spacing){
-      canvas.drawLine(Offset(0,i), Offset(size.width, i), paint);
+    for (var y = 0.0; y < size.height; y += spacing) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
-
   }
 
   @override
-  bool shouldRepaint (covariant CustomPainter oldDeletate) => false;
-
-
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

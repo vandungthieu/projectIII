@@ -33,6 +33,8 @@ model Device {
   deviceKey         String        @unique
   isActivated       Boolean       @default(false)
   vehicleStatus     VehicleStatus @default(Parked)
+  parkedLocation    Json?
+  suspiciousCount   Int           @default(0)
   lastSpeedAlert    Boolean       @default(false)
   buzzerStatus      Boolean       @default(false)
   alerts            Alert[]

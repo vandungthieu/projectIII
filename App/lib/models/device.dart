@@ -1,11 +1,11 @@
 // lib/models/device.dart
 import 'package:mobile_project/models/sensorData.dart';
 
-enum VehicleStatus { parked, moving, unknown }
+enum VehicleStatus { parked, moving, stolen, unknown }
 
 class Device {
   final int id;
-  final String deviceId;        // cái này là UUID ngẫu nhiên
+  final String deviceId; // cái này là UUID ngẫu nhiên
   final String? licensePlate;
   DateTime lastSeen;
   final DateTime createdAt;
@@ -14,7 +14,7 @@ class Device {
   final String deviceKey;
   final bool isActivated;
   VehicleStatus vehicleStatus;
-  bool buzzerStatus ;
+  bool buzzerStatus;
   final List<SensorData> sensorData; // lấy luôn vị trí mới nhất
 
   // Tính toán tiện dùng trong UI
@@ -28,8 +28,9 @@ class Device {
   Map<String, dynamic>? get latestLocation {
     if (sensorData.isEmpty) return null;
     // Sắp xếp giảm dần theo createdAt, lấy cái mới nhất
-    final latest = sensorData.reduce((a, b) =>
-    a.createdAt.isAfter(b.createdAt) ? a : b);
+    final latest = sensorData.reduce(
+      (a, b) => a.createdAt.isAfter(b.createdAt) ? a : b,
+    );
     return latest.location;
   }
 
@@ -77,8 +78,10 @@ class Device {
         return VehicleStatus.moving;
       case 'parked':
         return VehicleStatus.parked;
+      case 'stolen':
+        return VehicleStatus.stolen;
       default:
-        return VehicleStatus.parked;
+        return VehicleStatus.unknown;
     }
   }
 }

@@ -4,11 +4,13 @@ import 'package:mobile_project/utils/app_textstyles.dart';
 class CustomSearchBar extends StatefulWidget {
   final Function(String)? onSearch;
   final String initialText;
+  final String hintText;
 
   const CustomSearchBar({
     super.key,
     this.onSearch,
     this.initialText = '',
+    this.hintText = 'Tìm kiếm',
   });
 
   @override
@@ -21,9 +23,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(
-      text: widget.initialText,
-    );
+    _controller = TextEditingController(text: widget.initialText);
   }
 
   @override
@@ -40,43 +40,55 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       padding: const EdgeInsets.all(16),
       child: TextField(
         controller: _controller,
+        onChanged: (value) {
+          widget.onSearch?.call(value);
+          setState(() {});
+        },
+        textInputAction: TextInputAction.search,
         style: AppTextStyle.withColor(
           AppTextStyle.buttonMedium,
           Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
         ),
         decoration: InputDecoration(
-          hintText: 'Tìm kiếm',
+          hintText: widget.hintText,
           hintStyle: AppTextStyle.withColor(
             AppTextStyle.buttonMedium,
             isDark ? Colors.grey[400]! : Colors.grey[600]!,
           ),
-
-          /// 🔍 Nút tìm kiếm
-          prefixIcon: IconButton(
-            icon: Icon(
-              Icons.search,
-              color: isDark ? Colors.grey[400] : Colors.grey[600],
-            ),
-            onPressed: () {
-              widget.onSearch?.call(_controller.text);
-            },
+          prefixIcon: Icon(
+            Icons.search,
+            color: isDark ? Colors.grey[400] : Colors.grey[600],
           ),
-
+          suffixIcon: _controller.text.isEmpty
+              ? null
+              : IconButton(
+                  tooltip: 'Xóa tìm kiếm',
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    _controller.clear();
+                    widget.onSearch?.call('');
+                    setState(() {});
+                  },
+                ),
           filled: true,
-          fillColor: isDark ? Colors.grey[800] : Colors.grey[100],
+          fillColor: isDark ? Colors.grey[850] : Colors.white,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 14,
+          ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(
-              color: isDark ? Colors.grey[400]! : Colors.grey[600]!,
+              color: isDark ? Colors.white10 : const Color(0xFFE5E7EB),
               width: 1,
             ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(
               color: Theme.of(context).primaryColor,
               width: 1,

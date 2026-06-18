@@ -1,128 +1,208 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { SensorDataGateway } from "./sensor-data.gateway";
+import {
+  haversineDistanceMeters,
+  normalizeLocation,
+} from "src/common/utils/location.util";
+
+const SPEED_THRESHOLD = 10;
+const DISTANCE_THRESHOLD_METERS = 50;
+const SEVERE_DISTANCE_THRESHOLD_METERS = 100;
+const ALERT_STREAK_THRESHOLD = 2;
+const SEVERE_STREAK_THRESHOLD = 3;
 
 @Injectable()
-export class SensorDataService{
-    constructor(
-        private prisma : PrismaService,
-        private gateway: SensorDataGateway,
-    ){}
+export class SensorDataService {
+  constructor(
+    private prisma: PrismaService,
+    private gateway: SensorDataGateway,
+  ) {}
 
-    // xử lý dữ liệu từ mqtt
-    async createFromMqtt(deviceId : string, payload: any) {
-        const device = await this.prisma.device.findUnique({
-            where: { deviceId },
-        });
+  async createFromMqtt(deviceId: string, payload: any) {
+    const device = await this.prisma.device.findUnique({
+      where: { deviceId },
+    });
 
-        if (!device) {
-            console.warn(`Thiết bị ${deviceId} không tồn tại`);
-            return;
-        }
-
-         //  Kiểm tra trạng thái kích hoạt
-        if (!device.isActivated) {
-            console.warn(` Thiết bị ${deviceId} đang bị khóa, bỏ qua dữ liệu`);
-            return;
-        }
-          
-        // Cập nhật thời gian "lastseen"
-        await this.prisma.device.update({
-            where: { id: device.id },
-            data: { lastSeen: new Date() },
-        });
-
-        // lưu dữ liệu 
-        const sensor = await this.prisma.sensorData.create({
-            data: {
-                deviceId: device.id, 
-                speed: payload.speed,
-                location: payload.location,
-            },
-        });
-
-        console.log(`Lưu dữ liệu thành công cho device: ${deviceId}`);
-
-        // Gọi hàm kiểm tra cảnh báo
-        await this.checkAndCreateAlert(device, payload.speed, payload.location);
-
-        //  Gửi dữ liệu real-time cho client
-        // this.gateway.sendSensorData({
-        //     deviceId: deviceId,
-        //     speed: payload.speed,
-        //     location: payload.location,
-        //     createdAt: new Date(),
-        // });
-
-       if (device.userId) {
-        this.gateway.sendDataToUser(device.userId, {
-            id: sensor.id,
-            deviceId: sensor.deviceId,   // ✅ INT
-            speed: sensor.speed,
-            location: sensor.location,
-            createdAt: sensor.createdAt,
-        });
-        } else {
-            console.warn(`⚠️ Device ${deviceId} has no user assigned — skipping WebSocket send.`);
-        }
+    if (!device) {
+      console.warn(`Device ${deviceId} does not exist`);
+      return;
     }
 
-    
-    private async checkAndCreateAlert(device: any, speed: number, location: any) {
-    const exceedSpeed = device.vehicleStatus === "Parked" && speed > 10;
-
-    // Nếu không vượt quá 10 km/h thì reset trạng thái
-    if (!exceedSpeed) {
-        if (device.lastSpeedAlert) {
-            await this.prisma.device.update({
-                where: { id: device.id },
-                data: { lastSpeedAlert: false },
-            });
-        }
-        return;
+    if (!device.isActivated) {
+      console.warn(`Device ${deviceId} is not activated, skipping data`);
+      return;
     }
 
-    // Nếu đã gửi cảnh báo rồi → không gửi nữa
-    if (device.lastSpeedAlert) {
-        return;
-    }
+    const speed = this.normalizeSpeed(payload.speed);
+    const normalizedLocation = normalizeLocation(payload.location);
+    const sensorLocation = normalizedLocation ?? payload.location ?? null;
 
-    // Đánh dấu đã gửi cảnh báo
     await this.prisma.device.update({
+      where: { id: device.id },
+      data: { lastSeen: new Date() },
+    });
+
+    const sensor = await this.prisma.sensorData.create({
+      data: {
+        deviceId: device.id,
+        speed,
+        location: sensorLocation,
+      },
+    });
+
+    await this.evaluateVehicleRisk(device, speed ?? 0, sensorLocation);
+
+    if (device.userId) {
+      this.gateway.sendDataToUser(device.userId, {
+        id: sensor.id,
+        deviceId: sensor.deviceId,
+        speed: sensor.speed,
+        location: sensor.location,
+        createdAt: sensor.createdAt,
+      });
+    }
+  }
+
+  private normalizeSpeed(speed: unknown): number | null {
+    if (typeof speed === "number" && Number.isFinite(speed)) {
+      return speed;
+    }
+    if (typeof speed === "string") {
+      const parsed = Number(speed);
+      if (Number.isFinite(parsed)) {
+        return parsed;
+      }
+    }
+    return null;
+  }
+
+  private async evaluateVehicleRisk(
+    device: any,
+    speed: number,
+    location: any,
+  ) {
+    const currentLocation = normalizeLocation(location);
+    const parkedLocation = normalizeLocation(device.parkedLocation);
+    const isParked = device.vehicleStatus === "Parked";
+
+    if (!isParked) {
+      if (device.suspiciousCount !== 0 || device.lastSpeedAlert) {
+        await this.prisma.device.update({
+          where: { id: device.id },
+          data: {
+            suspiciousCount: 0,
+            lastSpeedAlert: false,
+          },
+        });
+      }
+      return;
+    }
+
+    if (!parkedLocation && currentLocation && speed <= SPEED_THRESHOLD) {
+      await this.prisma.device.update({
         where: { id: device.id },
-        data: { lastSpeedAlert: true },
+        data: { parkedLocation: currentLocation },
+      });
+      return;
+    }
+
+    const speedAnomaly = speed > SPEED_THRESHOLD;
+    const distanceMeters =
+      parkedLocation && currentLocation
+        ? haversineDistanceMeters(parkedLocation, currentLocation)
+        : null;
+    const distanceAnomaly =
+      distanceMeters !== null && distanceMeters > DISTANCE_THRESHOLD_METERS;
+    const severeDistance =
+      distanceMeters !== null &&
+      distanceMeters > SEVERE_DISTANCE_THRESHOLD_METERS;
+
+    const suspicious = speedAnomaly || distanceAnomaly;
+
+    if (!suspicious) {
+      if (device.suspiciousCount !== 0 || device.lastSpeedAlert) {
+        await this.prisma.device.update({
+          where: { id: device.id },
+          data: {
+            suspiciousCount: 0,
+            lastSpeedAlert: false,
+          },
+        });
+      }
+      return;
+    }
+
+    const nextSuspiciousCount = (device.suspiciousCount ?? 0) + 1;
+
+    if (nextSuspiciousCount < ALERT_STREAK_THRESHOLD) {
+      await this.prisma.device.update({
+        where: { id: device.id },
+        data: { suspiciousCount: nextSuspiciousCount },
+      });
+      return;
+    }
+
+    if (device.lastSpeedAlert) {
+      await this.prisma.device.update({
+        where: { id: device.id },
+        data: { suspiciousCount: nextSuspiciousCount },
+      });
+      return;
+    }
+
+    const shouldMarkStolen =
+      severeDistance ||
+      nextSuspiciousCount >= SEVERE_STREAK_THRESHOLD ||
+      (speedAnomaly && distanceAnomaly);
+
+    const messageParts: string[] = [];
+    if (speedAnomaly) {
+      messageParts.push(`speed ${speed} km/h over threshold`);
+    }
+    if (distanceAnomaly && distanceMeters !== null) {
+      messageParts.push(
+        `moved ${distanceMeters.toFixed(0)} m away from parked location`,
+      );
+    }
+
+    const alertMessage = messageParts.length
+      ? `Suspicious vehicle behavior: ${messageParts.join(" and ")}.`
+      : `Vehicle is moving abnormally at ${speed} km/h!`;
+
+    await this.prisma.device.update({
+      where: { id: device.id },
+      data: {
+        suspiciousCount: nextSuspiciousCount,
+        lastSpeedAlert: true,
+        ...(shouldMarkStolen ? { vehicleStatus: "Stolen" } : {}),
+      },
     });
 
     const alert = await this.prisma.alert.create({
-        data: {
-            deviceId: device.id,
-            userId: device.userId,
-            message: `Xe đang di chuyển với tốc độ (${speed} km/h)!`,
-            location,
-        },
+      data: {
+        deviceId: device.id,
+        userId: device.userId,
+        message: alertMessage,
+        location: currentLocation ?? location,
+      },
     });
 
-
-        this.gateway.sendAlertToUser(device.userId, {
-            id: alert.id,
-            deviceId: alert.deviceId,            
-            deviceCode: device.deviceId,          
-            licensePlate: device.licensePlate,    
-            userId: alert.userId,
-            message: alert.message,
-            location: alert.location,
-            createdAt: alert.createdAt,
-        });
+    if (device.userId) {
+      this.gateway.sendAlertToUser(device.userId, {
+        id: alert.id,
+        deviceId: alert.deviceId,
+        deviceCode: device.deviceId,
+        licensePlate: device.licensePlate,
+        userId: alert.userId,
+        message: alert.message,
+        location: alert.location,
+        createdAt: alert.createdAt,
+        severity: shouldMarkStolen ? "high" : "medium",
+        speed,
+        distanceMeters,
+        vehicleStatus: shouldMarkStolen ? "Stolen" : "Parked",
+      });
     }
-
+  }
 }
-
-// {
-// "deviceId": "device3",
-//   "deviceKey": "413d6b176257eaca25077811bca3217d",
-//   "speed": 30,
-//   "location": {
-//     "lat": 10.76,
-//     "lng": 106.66
-//   }
-// }

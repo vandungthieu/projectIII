@@ -7,31 +7,36 @@ class CustomBottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NavigationController navigationController =Get.find<NavigationController>();
+    final navigationController = Get.find<NavigationController>();
 
     return Obx(
-        ()=> BottomNavigationBar(
-          currentIndex: navigationController.currentIndex.value,
-          onTap: (value) => navigationController.changeIndex(value),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label :'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.device_hub),
-              label :'Device',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_outlined),
-              label :'Alert',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label :'Account',
-            ),
-          ],
-        )
+      () => NavigationBar(
+        selectedIndex: navigationController.currentIndex.value,
+        onDestinationSelected: navigationController.changeIndex,
+        height: 68,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Trang chủ',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.devices_other_outlined),
+            selectedIcon: Icon(Icons.devices_other),
+            label: 'Thiết bị',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.notifications_outlined),
+            selectedIcon: Icon(Icons.notifications),
+            label: 'Cảnh báo',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Tài khoản',
+          ),
+        ],
+      ),
     );
   }
 }

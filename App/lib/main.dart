@@ -13,19 +13,16 @@ import 'package:mobile_project/view/splash_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 
   Get.put(SocketService(), permanent: true);
-
   Get.put(ThemeController());
   Get.put(AuthController());
   Get.put(NavigationController());
   Get.put(DeviceController(), permanent: true);
   Get.put(AlertController());
   Get.put(SensorDataController(), permanent: true);
-
-
-
 
   timeago.setLocaleMessages('vi', timeago.ViMessages());
   runApp(const MyApp());
@@ -37,15 +34,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
+
     return GetMaterialApp(
       title: 'App Chống Trộm Xe',
+      debugShowCheckedModeBanner: false,
       theme: AppThemes.light,
-      darkTheme : AppThemes.dark,
-     themeMode: themeController.theme,
-     defaultTransition: Transition.fade,
-      home:  SplashScreen()
+      darkTheme: AppThemes.dark,
+      themeMode: themeController.theme,
+      defaultTransition: Transition.fade,
+      home: SplashScreen(),
     );
   }
 }
-
-
