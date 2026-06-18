@@ -115,7 +115,8 @@ class DeviceCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Obx(() {
-                final isMoving = device.vehicleStatus == VehicleStatus.moving;
+                final isProtected =
+                    device.vehicleStatus == VehicleStatus.parked;
                 final isBuzzerOn = device.buzzerStatus;
                 final isTogglingStatus =
                     ctrl.togglingDeviceId.value == device.id;
@@ -126,15 +127,17 @@ class DeviceCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _ActionButton(
-                        icon: isMoving
-                            ? Icons.directions_car
-                            : Icons.local_parking,
-                        label: isMoving ? 'Đang chạy' : 'Đang đỗ',
-                        color: isMoving ? AppColors.warning : AppColors.success,
+                        icon: isProtected
+                            ? Icons.shield_outlined
+                            : Icons.shield,
+                        label: isProtected ? 'Tắt bảo vệ' : 'Bật bảo vệ',
+                        color: isProtected
+                            ? AppColors.success
+                            : AppColors.warning,
                         isLoading: isTogglingStatus,
                         onPressed: device.isActivated
                             ? () =>
-                                  ctrl.toggleVehicleStatus(device.id, !isMoving)
+                                  ctrl.toggleVehicleStatus(device.id, isProtected)
                             : null,
                       ),
                     ),
@@ -168,15 +171,15 @@ class DeviceCard extends StatelessWidget {
     switch (status) {
       case VehicleStatus.moving:
         return const _StatusInfo(
-          label: 'Di chuyển',
+          label: 'Không bảo vệ',
           color: AppColors.warning,
-          icon: Icons.directions_car,
+          icon: Icons.shield_outlined,
         );
       case VehicleStatus.parked:
         return const _StatusInfo(
-          label: 'An toàn',
+          label: 'Đang bảo vệ',
           color: AppColors.success,
-          icon: Icons.shield_outlined,
+          icon: Icons.shield,
         );
       case VehicleStatus.stolen:
         return const _StatusInfo(

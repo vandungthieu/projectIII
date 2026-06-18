@@ -43,6 +43,9 @@ class DeviceScreen extends StatelessWidget {
                   onSearch: deviceController.search,
                 ),
               ),
+              SliverToBoxAdapter(
+                child: _StatusFilters(controller: deviceController),
+              ),
               if (deviceController.isLoading.value)
                 const SliverFillRemaining(
                   hasScrollBody: false,
@@ -102,6 +105,51 @@ class DeviceScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _StatusFilters extends StatelessWidget {
+  final DeviceController controller;
+
+  const _StatusFilters({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final filters = [
+      const _DeviceFilter(label: 'Tất cả', value: 'all'),
+      const _DeviceFilter(label: 'Đang đỗ', value: 'parked'),
+      const _DeviceFilter(label: 'Đang chạy', value: 'moving'),
+      const _DeviceFilter(label: 'Nguy hiểm', value: 'stolen'),
+      const _DeviceFilter(label: 'Còi bật', value: 'buzzer'),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: filters
+              .map(
+                (filter) => Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(filter.label),
+                    selected: controller.statusFilter.value == filter.value,
+                    onSelected: (_) => controller.setStatusFilter(filter.value),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class _DeviceFilter {
+  final String label;
+  final String value;
+
+  const _DeviceFilter({required this.label, required this.value});
 }
 
 class _SummarySection extends StatelessWidget {

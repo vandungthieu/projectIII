@@ -9,6 +9,9 @@ class SocketService {
   final logger = Logger();
 
   void connect(String token) {
+    if (socket?.connected == true) return;
+    socket?.dispose();
+
     socket = IO.io(
       'http://10.0.2.2:3000',
       IO.OptionBuilder()
@@ -45,8 +48,10 @@ class SocketService {
     socket!.on('sensorData', (sensorDataJson) {
       logger.i("🔥 SOCKET sensorData RECEIVED");
 
-      logger.i("isRegistered SensorDataController: "
-          "${Get.isRegistered<SensorDataController>()}");
+      logger.i(
+        "isRegistered SensorDataController: "
+        "${Get.isRegistered<SensorDataController>()}",
+      );
 
       if (Get.isRegistered<SensorDataController>()) {
         Get.find<SensorDataController>().updateFromSocket(sensorDataJson);

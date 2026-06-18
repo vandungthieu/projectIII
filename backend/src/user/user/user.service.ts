@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateProfileDto } from "../dto/update-profile.dto";
 import * as bcrypt from "bcrypt"
+import { FcmTokenDto } from "../dto/fcm-token.dto";
 
 @Injectable()
 export class UserService{
@@ -124,6 +125,37 @@ export class UserService{
         }));
 
         return result;
+    }
+
+    async saveFcmToken(userId: number, dto: FcmTokenDto) {
+        await this.prisma.fcmToken.upsert({
+            where: { token: dto.token },
+            create: {
+                userId,
+                token: dto.token,
+                platform: dto.platform,
+                deviceName: dto.deviceName,
+            },
+            update: {
+                userId,
+                platform: dto.platform,
+                deviceName: dto.deviceName,
+            },
+        });
+
+        return { message: 'success' };
+    }
+
+    async deleteFcmToken(userId: number, token: string) {
+        if (!token) {
+            return { message: 'success' };
+        }
+
+        await this.prisma.fcmToken.deleteMany({
+            where: { userId, token },
+        });
+
+        return { message: 'success' };
     }
     
 

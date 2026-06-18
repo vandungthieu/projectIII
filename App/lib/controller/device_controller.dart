@@ -4,15 +4,19 @@ import 'package:mobile_project/view/device_screen.dart';
 import '../models/device.dart';
 import '../models/sensorData.dart';
 import '../service/device_service.dart';
+import '../service/notification_service.dart';
 import 'auth_controller.dart';
 
 class DeviceController extends GetxController {
   final DeviceService _service = DeviceService();
+  final NotificationService _notificationService =
+      Get.find<NotificationService>();
 
   var devices = <Device>[].obs;
   var filtered = <Device>[].obs;
 
   final RxString searchText = ''.obs;
+  final RxString statusFilter = 'all'.obs;
 
   var isLoading = true.obs;
   var error = RxnString();
@@ -20,9 +24,10 @@ class DeviceController extends GetxController {
   var togglingBuzzerId = RxnInt();
 
   /// Sensor data realtime theo deviceId
-  final RxMap<int, List<SensorData>> sensorDataMap = <int, List<SensorData>>{}.obs;
+  final RxMap<int, List<SensorData>> sensorDataMap =
+      <int, List<SensorData>>{}.obs;
 
-  String get token => Get.find<AuthController>().token ?? '';
+  String get token => Get.find<AuthController>().token;
 
   @override
   void onInit() {
@@ -38,7 +43,7 @@ class DeviceController extends GetxController {
       final result = await _service.getMyDevices(token);
       if (result != null) {
         devices.assignAll(result);
-        filtered.assignAll(result);
+        _applyFilters();
       } else {
         error.value = "Không tải được danh sách thiết bị";
       }
@@ -54,7 +59,9 @@ class DeviceController extends GetxController {
     // Optimistic UI
     togglingDeviceId.value = id;
     final oldStatus = device.vehicleStatus;
-    device.vehicleStatus = toMoving ? VehicleStatus.moving : VehicleStatus.parked;
+    device.vehicleStatus = toMoving
+        ? VehicleStatus.moving
+        : VehicleStatus.parked;
     devices.refresh();
 
     // Gọi API (bạn cần tạo endpoint này ở backend)
@@ -67,7 +74,11 @@ class DeviceController extends GetxController {
     if (!success) {
       device.vehicleStatus = oldStatus;
       devices.refresh();
-      Get.snackbar("Lỗi", "Không thể thay đổi trạng thái xe", backgroundColor: Colors.red);
+      Get.snackbar(
+        "Lỗi",
+        "Không thể thay đổi trạng thái xe",
+        backgroundColor: Colors.red,
+      );
     }
 
     togglingDeviceId.value = null;
@@ -100,12 +111,11 @@ class DeviceController extends GetxController {
       );
     } else {
       if (turnOn) {
-        Get.snackbar(
-          "Đã bật còi!",
-          "Thiết bị đang kêu báo động",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
+        await _notificationService.showDeviceAction(
+          id: device.id,
+          title: 'Da bat coi bao dong',
+          body: 'Thiet bi ${device.deviceId} dang keu bao dong',
+          payload: 'device:${device.id}:buzzer_on',
         );
       }
     }
@@ -113,23 +123,35 @@ class DeviceController extends GetxController {
     togglingBuzzerId.value = null;
   }
 
-
-
   Future<void> refreshDevices() => fetchDevices();
-
 
   // search device
   void search(String keyword) {
     searchText.value = keyword;
-    final lower = keyword.toLowerCase().trim();
+    _applyFilters();
+  }
 
-    if (lower.isEmpty) {
-      filtered.assignAll(devices);
-      return;
-    }
+  void setStatusFilter(String value) {
+    statusFilter.value = value;
+    _applyFilters();
+  }
+
+  void _applyFilters() {
+    final lower = searchText.value.toLowerCase().trim();
+    final status = statusFilter.value;
 
     final result = devices.where((d) {
-      final deviceId = (d.deviceId ?? "").toLowerCase();
+      final matchesStatus = switch (status) {
+        'parked' => d.vehicleStatus == VehicleStatus.parked,
+        'moving' => d.vehicleStatus == VehicleStatus.moving,
+        'stolen' => d.vehicleStatus == VehicleStatus.stolen,
+        'buzzer' => d.buzzerStatus,
+        _ => true,
+      };
+      if (!matchesStatus) return false;
+      if (lower.isEmpty) return true;
+
+      final deviceId = d.deviceId.toLowerCase();
       final licensePlate = (d.licensePlate ?? "").toLowerCase();
 
       return deviceId == lower ||
@@ -142,10 +164,14 @@ class DeviceController extends GetxController {
 
     // Sắp xếp FIXED - đầy đủ logic
     result.sort((a, b) {
-      final aId = (a.deviceId ?? "").toLowerCase();
-      final bId = (b.deviceId ?? "").toLowerCase();
+      final aId = a.deviceId.toLowerCase();
+      final bId = b.deviceId.toLowerCase();
       final aPlate = (a.licensePlate ?? "").toLowerCase();
       final bPlate = (b.licensePlate ?? "").toLowerCase();
+
+      if (lower.isEmpty) {
+        return aId.compareTo(bId);
+      }
 
       // 1. Exact match cả ID và Plate
       if (aId == lower || aPlate == lower) {
@@ -191,7 +217,7 @@ class DeviceController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await _service.activateDevice(
+      await _service.activateDevice(
         deviceId: deviceId,
         deviceKey: deviceKey,
         token: token,
@@ -211,9 +237,6 @@ class DeviceController extends GetxController {
 
       // quay lại device screen
       Get.off(() => DeviceScreen());
-
-
-
     } catch (e) {
       // API trả lỗi 400 hoặc 409
       Get.snackbar(
@@ -254,17 +277,12 @@ class DeviceController extends GetxController {
     }
   }
 
-
   // xóa thiết bị
   Future<void> deleteMyDevice(int deviceId) async {
     try {
       isLoading.value = true;
 
-
-      await _service.deleteMyDevice(
-        deviceId: deviceId,
-        token: token,
-      );
+      await _service.deleteMyDevice(deviceId: deviceId, token: token);
 
       // Xoá device khỏi list local
       devices.removeWhere((e) => e.id == deviceId);
@@ -276,11 +294,7 @@ class DeviceController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
     }
@@ -313,7 +327,4 @@ class DeviceController extends GetxController {
       isLoading.value = false;
     }
   }
-
-
-
 }

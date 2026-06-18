@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "591100228952",
+    "project_id": "datn-tvd20215547",
+    "storage_bucket": "datn-tvd20215547.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591100228952:android:cfb2fd62618c28cb2de12d",
+        "android_client_info": {
+          "package_name": "com.example.mobile_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlGig7dz7YcoxfOkAJVKCFu-TtGdDFX08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

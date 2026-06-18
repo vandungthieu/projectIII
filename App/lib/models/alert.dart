@@ -8,6 +8,8 @@ class Alert {
   final double? lng;
   final DateTime createdAt;
   final String? licensePlate;
+  final String? severity;
+  final String? vehicleStatus;
 
   Alert({
     required this.id,
@@ -19,6 +21,8 @@ class Alert {
     this.lng,
     required this.createdAt,
     this.licensePlate,
+    this.severity,
+    this.vehicleStatus,
   });
 
   factory Alert.fromJson(Map<String, dynamic> json) {
@@ -44,6 +48,8 @@ class Alert {
       lng: longitude,
       createdAt: DateTime.parse(json['createdAt'] as String),
       licensePlate: json['licensePlate'] as String?,
+      severity: json['severity']?.toString(),
+      vehicleStatus: json['vehicleStatus']?.toString(),
     );
   }
 

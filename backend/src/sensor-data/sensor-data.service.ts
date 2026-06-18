@@ -5,6 +5,7 @@ import {
   haversineDistanceMeters,
   normalizeLocation,
 } from "src/common/utils/location.util";
+import { FirebaseMessagingService } from "src/firebase/firebase-messaging.service";
 
 const SPEED_THRESHOLD = 10;
 const DISTANCE_THRESHOLD_METERS = 50;
@@ -17,6 +18,7 @@ export class SensorDataService {
   constructor(
     private prisma: PrismaService,
     private gateway: SensorDataGateway,
+    private firebaseMessaging: FirebaseMessagingService,
   ) {}
 
   async createFromMqtt(deviceId: string, payload: any) {
@@ -202,6 +204,19 @@ export class SensorDataService {
         speed,
         distanceMeters,
         vehicleStatus: shouldMarkStolen ? "Stolen" : "Parked",
+      });
+
+      await this.firebaseMessaging.sendToUser(device.userId, {
+        title: shouldMarkStolen ? "Canh bao khan cap" : "Canh bao moi",
+        body: `${device.licensePlate ?? device.deviceId}: ${alert.message}`,
+        data: {
+          type: "alert",
+          alertId: alert.id,
+          deviceId: alert.deviceId,
+          deviceCode: device.deviceId,
+          severity: shouldMarkStolen ? "high" : "medium",
+          vehicleStatus: shouldMarkStolen ? "Stolen" : "Parked",
+        },
       });
     }
   }

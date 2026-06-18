@@ -44,6 +44,34 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Firebase Cloud Messaging
+
+Push notifications are sent from the backend with Firebase Admin SDK when an
+anti-theft alert is created.
+
+Configure Firebase with one of these options:
+
+```bash
+# Option 1: service account JSON file
+FIREBASE_SERVICE_ACCOUNT_PATH=D:\secure\firebase-service-account.json
+```
+
+```bash
+# Option 2: individual environment variables
+FIREBASE_PROJECT_ID=your-firebase-project-id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+```
+
+Do not commit Firebase service account JSON files or private keys.
+
+After updating Prisma schema, run:
+
+```bash
+$ npx prisma migrate deploy
+$ npx prisma generate
+```
+
 ## Run tests
 
 ```bash

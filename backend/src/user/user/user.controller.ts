@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Put, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { UpdateProfileDto } from "../dto/update-profile.dto";
 import { ChangePasswordDto } from "../dto/change-password.dto";
+import { FcmTokenDto } from "../dto/fcm-token.dto";
 
 @Controller('user')
 export class UserController{
@@ -36,5 +37,16 @@ export class UserController{
         return this.userService.getMyAlert(req.user.id)
     }
 
+    @Post('fcm-token')
+    @UseGuards(JwtAuthGuard)
+    saveFcmToken(@Request() req: any, @Body() dto: FcmTokenDto) {
+        return this.userService.saveFcmToken(req.user.id, dto);
+    }
+
+    @Delete('fcm-token')
+    @UseGuards(JwtAuthGuard)
+    deleteFcmToken(@Request() req: any, @Body('token') token: string) {
+        return this.userService.deleteFcmToken(req.user.id, token);
+    }
 
 }

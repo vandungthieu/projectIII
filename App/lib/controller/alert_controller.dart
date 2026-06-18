@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_project/controller/auth_controller.dart';
 import 'package:mobile_project/models/alert.dart';
 import 'package:mobile_project/service/alert_service.dart';
+import 'package:mobile_project/service/notification_service.dart';
 
 class AlertController extends GetxController {
   final AlertService _service = AlertService();
+  final NotificationService _notificationService =
+      Get.find<NotificationService>();
 
   var alert = <Alert>[].obs;
   var filtered = <Alert>[].obs;
@@ -16,7 +18,7 @@ class AlertController extends GetxController {
 
   final RxString searchText = ''.obs;
 
-  String get token => Get.find<AuthController>().token ?? '';
+  String get token => Get.find<AuthController>().token;
 
   @override
   void onInit() {
@@ -41,9 +43,7 @@ class AlertController extends GetxController {
     }
   }
 
-
   Future<void> refreshAlert() => fetchAlert();
-
 
   // search alert
   void search(String keyword) {
@@ -51,7 +51,8 @@ class AlertController extends GetxController {
     final lower = keyword.toLowerCase().trim();
 
     // Danh sách gốc
-    final List<Alert> source = alert; // giả sử bạn có GetX list: RxList<Alert> alert
+    final List<Alert> source =
+        alert; // giả sử bạn có GetX list: RxList<Alert> alert
 
     if (lower.isEmpty) {
       filtered.assignAll(source);
@@ -77,8 +78,16 @@ class AlertController extends GetxController {
       final bMsg = b.message.toLowerCase();
 
       // 1. Exact match (deviceId hoặc message)
-      final aExact = aId == lower || aMsg.contains(lower) && aMsg.replaceAll(RegExp(r'[^a-z0-9]'), '') == lower.replaceAll(RegExp(r'[^a-z0-9]'), '');
-      final bExact = bId == lower || bMsg.contains(lower) && bMsg.replaceAll(RegExp(r'[^a-z0-9]'), '') == lower.replaceAll(RegExp(r'[^a-z0-9]'), '');
+      final aExact =
+          aId == lower ||
+          aMsg.contains(lower) &&
+              aMsg.replaceAll(RegExp(r'[^a-z0-9]'), '') ==
+                  lower.replaceAll(RegExp(r'[^a-z0-9]'), '');
+      final bExact =
+          bId == lower ||
+          bMsg.contains(lower) &&
+              bMsg.replaceAll(RegExp(r'[^a-z0-9]'), '') ==
+                  lower.replaceAll(RegExp(r'[^a-z0-9]'), '');
 
       if (aExact && !bExact) return -1;
       if (!aExact && bExact) return 1;
@@ -110,7 +119,7 @@ class AlertController extends GetxController {
     filtered.assignAll(result);
   }
 
-// Helper: tìm độ dài ngắn nhất của trường nào đó bắt đầu bằng keyword
+  // Helper: tìm độ dài ngắn nhất của trường nào đó bắt đầu bằng keyword
   int _minLengthStartingWith(String idStr, String msg, String keyword) {
     final lengths = <int>[];
 
@@ -124,9 +133,8 @@ class AlertController extends GetxController {
     return lengths.isEmpty ? 999999 : lengths.reduce((a, b) => a < b ? a : b);
   }
 
-
   /// Nhận alert realtime từ socket
-  void addAlertFromSocket(dynamic alertJson) {
+  Future<void> addAlertFromSocket(dynamic alertJson) async {
     try {
       final alertModel = Alert.fromJson(alertJson);
 
@@ -137,23 +145,22 @@ class AlertController extends GetxController {
       alert.refresh();
       filtered.refresh();
 
-      // 2. BẮN SNACKBAR TOÀN APP
-      Get.snackbar(
-        " CẢNH BÁO MỚI",
-        alertModel.message,
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-        isDismissible: true,
+      final isCritical =
+          alertModel.severity?.toLowerCase() == 'high' ||
+          alertModel.vehicleStatus?.toLowerCase() == 'stolen';
+      final deviceName = alertModel.licensePlate?.trim().isNotEmpty == true
+          ? alertModel.licensePlate!
+          : alertModel.deviceCode;
+
+      await _notificationService.showSecurityAlert(
+        id: alertModel.id,
+        title: isCritical ? 'Canh bao khan cap' : 'Canh bao moi',
+        body: '$deviceName: ${alertModel.message}',
+        critical: isCritical,
+        payload: 'alert:${alertModel.id}',
       );
     } catch (e) {
       print(" Parse alert socket error: $e");
     }
   }
-
-
-
-
-
 }

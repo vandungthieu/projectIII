@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobile_project/models/user.dart';
+import 'package:mobile_project/service/fcm_service.dart';
 import 'package:mobile_project/service/socket_service.dart';
-import 'package:mobile_project/view/account_screen.dart';
 import '../service/auth_service.dart';
 
 class AuthController extends GetxController {
@@ -22,28 +22,33 @@ class AuthController extends GetxController {
   bool get isLoggedIn => _isLoggedIn.value;
 
   final SocketService _socketService = Get.find<SocketService>();
+  final FcmService _fcmService = Get.find<FcmService>();
 
   String get token => _storage.read('token') ?? '';
 
-
   @override
-  void onInit(){
+  void onInit() {
     super.onInit();
     _loadInitialState();
     fetchUserInfo();
   }
 
-  void _loadInitialState(){
-    _isFirstTime.value = _storage.read('isFirstTime')?? true;
-    _isLoggedIn.value = _storage.read('isLoggedIn')?? false ;
+  void _loadInitialState() {
+    _isFirstTime.value = _storage.read('isFirstTime') ?? true;
+    _isLoggedIn.value = _storage.read('isLoggedIn') ?? false;
 
     final savedUser = _storage.read('user');
     if (savedUser != null) {
       user.value = User.fromJson(savedUser);
     }
+
+    if (_isLoggedIn.value && token.isNotEmpty) {
+      _socketService.connect(token);
+      _fcmService.registerToken(token);
+    }
   }
 
-  void setFirstTimeDone(){
+  void setFirstTimeDone() {
     _isFirstTime.value = false;
     _storage.write('isFirstTime', false);
   }
@@ -68,6 +73,7 @@ class AuthController extends GetxController {
         _storage.write('user', userJson);
 
         _socketService.connect(token);
+        _fcmService.registerToken(token);
       }
       return true;
     }
@@ -75,25 +81,27 @@ class AuthController extends GetxController {
     return false;
   }
 
-// --- Register ---
+  // --- Register ---
   Future<bool> register(String username, String password, String email) async {
     final result = await _authService.register(username, password, email);
 
-    if (result != null ) {
+    if (result != null) {
       return true;
     }
 
     return false;
   }
 
-
-  void logout() {
+  Future<void> logout() async {
+    final currentToken = token;
+    if (currentToken.isNotEmpty) {
+      await _fcmService.unregisterToken(currentToken);
+    }
     _isLoggedIn.value = false;
     _storage.write('isLoggedIn', false);
     _storage.remove('token');
     _storage.remove('user');
     _socketService.disconnect();
-
   }
 
   Future<void> fetchUserInfo() async {
@@ -136,7 +144,6 @@ class AuthController extends GetxController {
           user.refresh(); // <-- Quan trọng: ép rebuild ngay lập tức
         }
 
-
         // Thông báo thành công
         Get.snackbar(
           "Success",
@@ -149,7 +156,6 @@ class AuthController extends GetxController {
         if (Get.isOverlaysClosed == false) {
           Get.back();
         }
-
 
         return true;
       } else {
@@ -179,10 +185,7 @@ class AuthController extends GetxController {
   }
 
   // change password
-  Future<bool> changePassword(
-      String oldPassword,
-      String newPassword,
-      ) async {
+  Future<bool> changePassword(String oldPassword, String newPassword) async {
     try {
       isLoading.value = true;
 
@@ -209,6 +212,4 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
-
-
 }

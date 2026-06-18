@@ -7,6 +7,8 @@ import 'package:mobile_project/controller/device_controller.dart';
 import 'package:mobile_project/controller/navigation_controller.dart';
 import 'package:mobile_project/controller/sensorData_controller.dart';
 import 'package:mobile_project/controller/theme_controller.dart';
+import 'package:mobile_project/service/fcm_service.dart';
+import 'package:mobile_project/service/notification_service.dart';
 import 'package:mobile_project/service/socket_service.dart';
 import 'package:mobile_project/utils/app_themes.dart';
 import 'package:mobile_project/view/splash_screen.dart';
@@ -15,7 +17,11 @@ import 'package:timeago/timeago.dart' as timeago;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+  await NotificationService.instance.init();
+  await FcmService.instance.init();
 
+  Get.put<NotificationService>(NotificationService.instance, permanent: true);
+  Get.put<FcmService>(FcmService.instance, permanent: true);
   Get.put(SocketService(), permanent: true);
   Get.put(ThemeController());
   Get.put(AuthController());

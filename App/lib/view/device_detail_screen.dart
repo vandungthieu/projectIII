@@ -204,12 +204,15 @@ class _DeviceHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMoving = device.vehicleStatus == VehicleStatus.moving;
+    final isProtected = device.vehicleStatus == VehicleStatus.parked;
     final isStolen = device.vehicleStatus == VehicleStatus.stolen;
     final statusColor = isStolen
         ? AppColors.danger
+        : isProtected
+        ? AppColors.success
         : isMoving
         ? AppColors.warning
-        : AppColors.success;
+        : AppColors.muted;
     final title = device.licensePlate?.trim().isNotEmpty == true
         ? device.licensePlate!
         : device.deviceId;
@@ -238,8 +241,8 @@ class _DeviceHero extends StatelessWidget {
                 child: Icon(
                   isStolen
                       ? Icons.warning_amber_rounded
-                      : isMoving
-                      ? Icons.directions_car
+                      : isProtected
+                      ? Icons.shield
                       : Icons.shield_outlined,
                   color: Colors.white,
                 ),
@@ -263,9 +266,11 @@ class _DeviceHero extends StatelessWidget {
                     Text(
                       isStolen
                           ? 'Xe đang ở trạng thái nguy hiểm'
+                          : isProtected
+                          ? 'Xe đang được bảo vệ'
                           : isMoving
-                          ? 'Xe đang di chuyển'
-                          : 'Xe đang ở trạng thái an toàn',
+                          ? 'Xe đang không được bảo vệ'
+                          : 'Chưa xác định chế độ bảo vệ',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.84),
                         fontSize: 13,
@@ -651,7 +656,7 @@ class _ActionPanel extends StatelessWidget {
         ),
       ),
       child: Obx(() {
-        final isMoving = device.vehicleStatus == VehicleStatus.moving;
+        final isProtected = device.vehicleStatus == VehicleStatus.parked;
         final isBuzzerOn = device.buzzerStatus;
         final isTogglingStatus = ctrl.togglingDeviceId.value == device.id;
         final isTogglingBuzzer = ctrl.togglingBuzzerId.value == device.id;
@@ -660,11 +665,11 @@ class _ActionPanel extends StatelessWidget {
           children: [
             Expanded(
               child: _DetailAction(
-                icon: isMoving ? Icons.local_parking : Icons.directions_car,
-                label: isMoving ? 'Chuyển sang đỗ' : 'Chuyển sang chạy',
-                color: isMoving ? AppColors.success : AppColors.warning,
+                icon: isProtected ? Icons.shield_outlined : Icons.shield,
+                label: isProtected ? 'Tắt bảo vệ' : 'Bật bảo vệ',
+                color: isProtected ? AppColors.success : AppColors.warning,
                 loading: isTogglingStatus,
-                onTap: () => ctrl.toggleVehicleStatus(device.id, !isMoving),
+                onTap: () => ctrl.toggleVehicleStatus(device.id, isProtected),
               ),
             ),
             const SizedBox(width: 10),

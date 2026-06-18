@@ -14,7 +14,7 @@ class SensorDataController extends GetxController {
 
   final sensorList = <SensorData>[].obs;
 
-  String get token => Get.find<AuthController>().token ?? '';
+  String get token => Get.find<AuthController>().token;
 
   // ================== PUBLIC API ==================
 
