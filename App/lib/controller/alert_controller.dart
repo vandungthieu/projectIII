@@ -6,10 +6,12 @@ import 'package:mobile_project/service/notification_service.dart';
 
 class AlertController extends GetxController {
   final AlertService _service = AlertService();
+  int _requestVersion = 0;
   final NotificationService _notificationService =
       Get.find<NotificationService>();
 
   var alert = <Alert>[].obs;
+  var allAlerts = <Alert>[].obs;
   var filtered = <Alert>[].obs;
 
   var isLoading = true.obs;
@@ -17,6 +19,8 @@ class AlertController extends GetxController {
   var togglingAlertId = RxnInt();
 
   final RxString searchText = ''.obs;
+  final selectedDate = Rxn<DateTime>();
+  final selectedDeviceId = RxnInt();
 
   String get token => Get.find<AuthController>().token;
 
@@ -27,28 +31,76 @@ class AlertController extends GetxController {
   }
 
   Future<void> fetchAlert() async {
+    final requestVersion = ++_requestVersion;
+    final from = _selectedDayStart;
+    final to = _selectedDayEnd;
+    final deviceId = selectedDeviceId.value;
+
     try {
       isLoading(true);
       error.value = null;
 
-      final result = await _service.getMyAlert(token);
+      final result = await _service.getMyAlert(
+        token,
+        from: from,
+        to: to,
+        deviceId: deviceId,
+      );
+      if (requestVersion != _requestVersion) return;
+
       if (result != null) {
         alert.assignAll(result);
-        filtered.assignAll(result);
+        if (selectedDate.value == null && selectedDeviceId.value == null) {
+          allAlerts.assignAll(result);
+        }
+        _applySearch();
       } else {
-        error.value = "Không tải được danh sách thiết bị";
+        error.value = "Không tải được danh sách cảnh báo";
       }
     } finally {
-      isLoading(false);
+      if (requestVersion == _requestVersion) isLoading(false);
     }
   }
 
   Future<void> refreshAlert() => fetchAlert();
 
+  Future<void> refreshAllAlerts() async {
+    final result = await _service.getMyAlert(token);
+    if (result == null) return;
+
+    allAlerts.assignAll(result);
+    if (selectedDate.value == null) {
+      alert.assignAll(result);
+      _applySearch();
+    }
+  }
+
+  Future<void> setDate(DateTime? date) async {
+    selectedDate.value = date == null
+        ? null
+        : DateTime(date.year, date.month, date.day);
+    await fetchAlert();
+  }
+
+  Future<void> setDevice(int? deviceId) async {
+    selectedDeviceId.value = deviceId;
+    await fetchAlert();
+  }
+
+  Future<void> clearFilters() async {
+    selectedDate.value = null;
+    selectedDeviceId.value = null;
+    await fetchAlert();
+  }
+
   // search alert
   void search(String keyword) {
     searchText.value = keyword;
-    final lower = keyword.toLowerCase().trim();
+    _applySearch();
+  }
+
+  void _applySearch() {
+    final lower = searchText.value.toLowerCase().trim();
 
     // Danh sách gốc
     final List<Alert> source =
@@ -138,12 +190,15 @@ class AlertController extends GetxController {
     try {
       final alertModel = Alert.fromJson(alertJson);
 
-      // 1. Thêm alert mới lên đầu list
-      alert.insert(0, alertModel);
-      filtered.insert(0, alertModel);
+      allAlerts.insert(0, alertModel);
+      allAlerts.refresh();
 
-      alert.refresh();
-      filtered.refresh();
+      if (_matchesSelectedDate(alertModel.createdAt) &&
+          _matchesSelectedDevice(alertModel.deviceId)) {
+        alert.insert(0, alertModel);
+        alert.refresh();
+        _applySearch();
+      }
 
       final isCritical =
           alertModel.severity?.toLowerCase() == 'high' ||
@@ -162,5 +217,30 @@ class AlertController extends GetxController {
     } catch (e) {
       print(" Parse alert socket error: $e");
     }
+  }
+
+  DateTime? get _selectedDayStart {
+    final date = selectedDate.value;
+    if (date == null) return null;
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  DateTime? get _selectedDayEnd {
+    final start = _selectedDayStart;
+    return start?.add(const Duration(days: 1));
+  }
+
+  bool _matchesSelectedDate(DateTime value) {
+    final selected = selectedDate.value;
+    if (selected == null) return true;
+    final local = value.toLocal();
+    return local.year == selected.year &&
+        local.month == selected.month &&
+        local.day == selected.day;
+  }
+
+  bool _matchesSelectedDevice(int deviceId) {
+    final selected = selectedDeviceId.value;
+    return selected == null || selected == deviceId;
   }
 }

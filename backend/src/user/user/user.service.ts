@@ -83,7 +83,12 @@ export class UserService{
     //     return alert
     // }
 
-    async getMyAlert(userId: number) {
+    async getMyAlert(
+        userId: number,
+        from?: string,
+        to?: string,
+        deviceId?: string,
+    ) {
         // 1. Kiểm tra user tồn tại
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
@@ -93,9 +98,24 @@ export class UserService{
             throw new NotFoundException('Not found User');
         }
 
+        const fromDate = this.parseDateQuery(from, 'from');
+        const toDate = this.parseDateQuery(to, 'to');
+        const parsedDeviceId = this.parseDeviceId(deviceId);
+
+        if (fromDate && toDate && fromDate >= toDate) {
+            throw new BadRequestException('from must be before to');
+        }
+
         // 2. Lấy alert + join device
         const alerts = await this.prisma.alert.findMany({
-            where: { userId },
+            where: {
+                userId,
+                ...(parsedDeviceId ? { deviceId: parsedDeviceId } : {}),
+                createdAt: {
+                    ...(fromDate ? { gte: fromDate } : {}),
+                    ...(toDate ? { lt: toDate } : {}),
+                },
+            },
             orderBy: { createdAt: 'desc' },
             include: {
             device: {
@@ -106,10 +126,6 @@ export class UserService{
             },
             },
         });
-
-        if (!alerts || alerts.length === 0) {
-            throw new NotFoundException('Not found alerts');
-        }
 
         // 3. Map response (KHÔNG ghi đè deviceId)
         const result = alerts.map((alert) => ({
@@ -125,6 +141,28 @@ export class UserService{
         }));
 
         return result;
+    }
+
+    private parseDateQuery(value: string | undefined, field: string): Date | undefined {
+        if (!value) return undefined;
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            throw new BadRequestException(`${field} must be a valid ISO date`);
+        }
+
+        return date;
+    }
+
+    private parseDeviceId(value: string | undefined): number | undefined {
+        if (!value) return undefined;
+
+        const deviceId = Number(value);
+        if (!Number.isInteger(deviceId) || deviceId <= 0) {
+            throw new BadRequestException('deviceId must be a positive integer');
+        }
+
+        return deviceId;
     }
 
     async saveFcmToken(userId: number, dto: FcmTokenDto) {

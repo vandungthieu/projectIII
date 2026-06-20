@@ -118,8 +118,25 @@ export class DeviceController{
      // get sensorData by device
     @Get('sensor/:id')
     @UseGuards(JwtAuthGuard)
-    getSensorDataByDevice(@Param('id', ParseIntPipe) id : number, @Request() req : any){
-        return this.deviceService.getSensorDataByDevice(id, req.user.id)
+    getSensorDataByDevice(
+        @Param('id', ParseIntPipe) id : number,
+        @Request() req : any,
+        @Query('from') from?: string,
+        @Query('to') to?: string,
+    ){
+        return this.deviceService.getSensorDataByDevice(id, req.user.id, from, to)
+    }
+
+    // get filtered GPS journey and travelled distance by device
+    @Get('journey/:id')
+    @UseGuards(JwtAuthGuard)
+    getJourneyByDevice(
+        @Param('id', ParseIntPipe) id: number,
+        @Request() req: any,
+        @Query('from') from?: string,
+        @Query('to') to?: string,
+    ) {
+        return this.deviceService.getJourneyByDevice(id, req.user.id, from, to)
     }
 
 }

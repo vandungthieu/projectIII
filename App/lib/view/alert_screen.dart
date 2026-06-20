@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_project/controller/alert_controller.dart';
+import 'package:mobile_project/controller/device_controller.dart';
 import 'package:mobile_project/models/alert.dart';
 import 'package:mobile_project/utils/app_themes.dart';
 import 'package:mobile_project/view/alert_detail_screen.dart';
 import 'package:mobile_project/view/widgets/custom_search_bar.dart';
+import 'package:mobile_project/view/widgets/date_filter_bar.dart';
+import 'package:mobile_project/view/widgets/device_filter_bar.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class AlertScreen extends StatefulWidget {
@@ -21,6 +24,7 @@ class _AlertScreenState extends State<AlertScreen> {
   @override
   Widget build(BuildContext context) {
     final alertController = Get.find<AlertController>();
+    final deviceController = Get.find<DeviceController>();
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -48,6 +52,35 @@ class _AlertScreenState extends State<AlertScreen> {
             slivers: [
               SliverToBoxAdapter(
                 child: _AlertSummary(controller: alertController),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: DateFilterBar(
+                    selectedDate: alertController.selectedDate.value,
+                    onDateSelected: (date) {
+                      setState(() => _page = 0);
+                      alertController.setDate(date);
+                    },
+                    onClear: () {
+                      setState(() => _page = 0);
+                      alertController.setDate(null);
+                    },
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                  child: DeviceFilterBar(
+                    devices: deviceController.devices,
+                    selectedDeviceId: alertController.selectedDeviceId.value,
+                    onChanged: (deviceId) {
+                      setState(() => _page = 0);
+                      alertController.setDevice(deviceId);
+                    },
+                  ),
+                ),
               ),
               SliverToBoxAdapter(
                 child: CustomSearchBar(
@@ -84,13 +117,34 @@ class _AlertScreenState extends State<AlertScreen> {
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: _StateMessage(
-                    icon: Icons.search_off,
-                    title: 'Không tìm thấy cảnh báo',
-                    message: 'Thử tìm bằng mã thiết bị hoặc nội dung khác.',
-                    actionLabel: 'Xóa tìm kiếm',
+                    icon:
+                        alertController.selectedDate.value == null &&
+                            alertController.selectedDeviceId.value == null
+                        ? Icons.search_off
+                        : Icons.event_busy_outlined,
+                    title:
+                        alertController.selectedDate.value == null &&
+                            alertController.selectedDeviceId.value == null
+                        ? 'Không tìm thấy cảnh báo'
+                        : 'Không có cảnh báo phù hợp',
+                    message:
+                        alertController.selectedDate.value == null &&
+                            alertController.selectedDeviceId.value == null
+                        ? 'Thử tìm bằng mã thiết bị hoặc nội dung khác.'
+                        : 'Chọn ngày, thiết bị khác hoặc xóa bộ lọc.',
+                    actionLabel:
+                        alertController.selectedDate.value == null &&
+                            alertController.selectedDeviceId.value == null
+                        ? 'Xóa tìm kiếm'
+                        : 'Xóa bộ lọc',
                     onAction: () {
                       setState(() => _page = 0);
-                      alertController.search('');
+                      if (alertController.selectedDate.value == null &&
+                          alertController.selectedDeviceId.value == null) {
+                        alertController.search('');
+                      } else {
+                        alertController.clearFilters();
+                      }
                     },
                   ),
                 )

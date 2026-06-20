@@ -8,8 +8,20 @@ final logger = Logger();
 class AlertService {
   final String baseUrl = "http://10.0.2.2:3000";
 
-  Future<List<Alert>?> getMyAlert(String token) async {
-    final url = Uri.parse("$baseUrl/user/my-alert");
+  Future<List<Alert>?> getMyAlert(
+    String token, {
+    DateTime? from,
+    DateTime? to,
+    int? deviceId,
+  }) async {
+    final query = <String, String>{
+      if (from != null) 'from': from.toUtc().toIso8601String(),
+      if (to != null) 'to': to.toUtc().toIso8601String(),
+      if (deviceId != null) 'deviceId': deviceId.toString(),
+    };
+    final url = Uri.parse(
+      '$baseUrl/user/my-alert',
+    ).replace(queryParameters: query.isEmpty ? null : query);
 
     try {
       logger.i("➡️ GET $url");

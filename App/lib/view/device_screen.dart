@@ -116,8 +116,8 @@ class _StatusFilters extends StatelessWidget {
   Widget build(BuildContext context) {
     final filters = [
       const _DeviceFilter(label: 'Tất cả', value: 'all'),
-      const _DeviceFilter(label: 'Đang đỗ', value: 'parked'),
-      const _DeviceFilter(label: 'Đang chạy', value: 'moving'),
+      const _DeviceFilter(label: 'Đang bảo vệ', value: 'parked'),
+      const _DeviceFilter(label: 'Không bảo vệ', value: 'moving'),
       const _DeviceFilter(label: 'Nguy hiểm', value: 'stolen'),
       const _DeviceFilter(label: 'Còi bật', value: 'buzzer'),
     ];

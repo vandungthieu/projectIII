@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
                     d.buzzerStatus,
               )
               .toList();
-          final recentAlerts = alertCtrl.alert.take(3).toList();
+          final recentAlerts = alertCtrl.allAlerts.take(3).toList();
 
           return RefreshIndicator(
             onRefresh: () => _refreshHome(deviceCtrl, alertCtrl),
@@ -114,7 +114,10 @@ class HomeScreen extends StatelessWidget {
     DeviceController deviceCtrl,
     AlertController alertCtrl,
   ) async {
-    await Future.wait([deviceCtrl.refreshDevices(), alertCtrl.refreshAlert()]);
+    await Future.wait([
+      deviceCtrl.refreshDevices(),
+      alertCtrl.refreshAllAlerts(),
+    ]);
   }
 }
 

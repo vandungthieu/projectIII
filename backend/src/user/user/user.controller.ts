@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { UpdateProfileDto } from "../dto/update-profile.dto";
@@ -33,8 +33,13 @@ export class UserController{
     //get my alert
     @Get('my-alert')
     @UseGuards(JwtAuthGuard)
-    getMyDeviceById(@Request() req : any){
-        return this.userService.getMyAlert(req.user.id)
+    getMyDeviceById(
+        @Request() req : any,
+        @Query('from') from?: string,
+        @Query('to') to?: string,
+        @Query('deviceId') deviceId?: string,
+    ){
+        return this.userService.getMyAlert(req.user.id, from, to, deviceId)
     }
 
     @Post('fcm-token')

@@ -5,9 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:mobile_project/controller/device_controller.dart';
 import 'package:mobile_project/controller/sensorData_controller.dart';
 import 'package:mobile_project/models/device.dart';
+import 'package:mobile_project/models/journey.dart';
 import 'package:mobile_project/models/sensorData.dart';
 import 'package:mobile_project/utils/app_themes.dart';
 import 'package:mobile_project/view/widgets/custom_textfield.dart';
+import 'package:mobile_project/view/widgets/date_filter_bar.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -37,78 +39,99 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final device = widget.device;
+    final deviceCtrl = Get.find<DeviceController>();
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Chi tiết thiết bị'),
-        actions: [
-          IconButton(
-            tooltip: 'Chỉnh sửa biển số',
-            onPressed: () => _showUpdate(context),
-            icon: const Icon(Icons.edit_outlined),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: sensorCtrl.refreshData,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-          children: [
-            _DeviceHero(device: device),
-            const SizedBox(height: 14),
-            _ActionPanel(device: device),
-            const SizedBox(height: 14),
-            _LocationMapSection(device: device, sensorCtrl: sensorCtrl),
-            const SizedBox(height: 18),
-            const Text(
-              'Dữ liệu cảm biến',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+    return Obx(() {
+      final matches = deviceCtrl.devices.where(
+        (device) => device.id == widget.device.id,
+      );
+      final device = matches.isEmpty ? widget.device : matches.first;
+
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: AppBar(
+          title: const Text('Chi tiết thiết bị'),
+          actions: [
+            IconButton(
+              tooltip: 'Chỉnh sửa biển số',
+              onPressed: () => _showUpdate(context),
+              icon: const Icon(Icons.edit_outlined),
             ),
-            const SizedBox(height: 10),
-            Obx(() {
-              if (sensorCtrl.isLoading.value) {
-                return const SizedBox(
-                  height: 220,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              final list = sensorCtrl.sensorList;
-              if (list.isEmpty) {
-                return const _EmptySensorState();
-              }
-
-              final totalPages = ((list.length - 1) ~/ _sensorPageSize) + 1;
-              final page = _sensorPage >= totalPages
-                  ? totalPages - 1
-                  : _sensorPage;
-              final start = page * _sensorPageSize;
-              final end = (start + _sensorPageSize) > list.length
-                  ? list.length
-                  : start + _sensorPageSize;
-              final pageItems = list.sublist(start, end);
-
-              return _SensorHistorySection(
-                items: pageItems,
-                currentPage: page,
-                totalPages: totalPages,
-                totalItems: list.length,
-                startIndex: start,
-                endIndex: end,
-                onPrevious: page == 0
-                    ? null
-                    : () => setState(() => _sensorPage = page - 1),
-                onNext: page >= totalPages - 1
-                    ? null
-                    : () => setState(() => _sensorPage = page + 1),
-              );
-            }),
           ],
         ),
-      ),
-    );
+        body: RefreshIndicator(
+          onRefresh: sensorCtrl.refreshData,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            children: [
+              _DeviceHero(device: device),
+              const SizedBox(height: 14),
+              _ActionPanel(device: device),
+              const SizedBox(height: 14),
+              _LocationMapSection(device: device, sensorCtrl: sensorCtrl),
+              const SizedBox(height: 18),
+              const Text(
+                'Dữ liệu cảm biến',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 10),
+              Obx(
+                () => DateFilterBar(
+                  selectedDate: sensorCtrl.selectedSensorDate.value,
+                  onDateSelected: (date) {
+                    setState(() => _sensorPage = 0);
+                    sensorCtrl.setSensorDate(date);
+                  },
+                  onClear: () {
+                    setState(() => _sensorPage = 0);
+                    sensorCtrl.setSensorDate(null);
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+              Obx(() {
+                if (sensorCtrl.isLoading.value) {
+                  return const SizedBox(
+                    height: 220,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final list = sensorCtrl.sensorList;
+                if (list.isEmpty) {
+                  return const _EmptySensorState();
+                }
+
+                final totalPages = ((list.length - 1) ~/ _sensorPageSize) + 1;
+                final page = _sensorPage >= totalPages
+                    ? totalPages - 1
+                    : _sensorPage;
+                final start = page * _sensorPageSize;
+                final end = (start + _sensorPageSize) > list.length
+                    ? list.length
+                    : start + _sensorPageSize;
+                final pageItems = list.sublist(start, end);
+
+                return _SensorHistorySection(
+                  items: pageItems,
+                  currentPage: page,
+                  totalPages: totalPages,
+                  totalItems: list.length,
+                  startIndex: start,
+                  endIndex: end,
+                  onPrevious: page == 0
+                      ? null
+                      : () => setState(() => _sensorPage = page - 1),
+                  onNext: page >= totalPages - 1
+                      ? null
+                      : () => setState(() => _sensorPage = page + 1),
+                );
+              }),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   void _showRemoveDialog(BuildContext context) {
@@ -314,8 +337,18 @@ class _LocationMapSection extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Obx(() {
-      final location = _currentLocation();
-      final point = _pointFromLocation(location);
+      final journey = sensorCtrl.journey.value;
+      final routePoints =
+          journey?.points
+              .map((point) => LatLng(point.lat, point.lng))
+              .toList() ??
+          const <LatLng>[];
+      final fallbackPoint = _pointFromLocation(_currentLocation());
+      final mapPoints = routePoints.isNotEmpty
+          ? routePoints
+          : fallbackPoint == null
+          ? const <LatLng>[]
+          : [fallbackPoint];
 
       return Container(
         padding: const EdgeInsets.all(14),
@@ -335,22 +368,51 @@ class _LocationMapSection extends StatelessWidget {
                 const SizedBox(width: 8),
                 const Expanded(
                   child: Text(
-                    'Vị trí trên bản đồ',
+                    'Hành trình',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                 ),
-                if (point != null)
-                  Text(
-                    '${point.latitude.toStringAsFixed(5)}, ${point.longitude.toStringAsFixed(5)}',
-                    style: TextStyle(
-                      color: isDark ? Colors.white54 : AppColors.muted,
-                      fontSize: 12,
-                    ),
+                Text(
+                  _distanceText(journey?.distanceMeters ?? 0),
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                   ),
+                ),
               ],
             ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<JourneyPeriod>(
+                segments: const [
+                  ButtonSegment(
+                    value: JourneyPeriod.day,
+                    label: Text('24 giờ'),
+                  ),
+                  ButtonSegment(
+                    value: JourneyPeriod.week,
+                    label: Text('7 ngày'),
+                  ),
+                  ButtonSegment(
+                    value: JourneyPeriod.all,
+                    label: Text('Tất cả'),
+                  ),
+                ],
+                selected: {sensorCtrl.journeyPeriod.value},
+                showSelectedIcon: false,
+                onSelectionChanged: sensorCtrl.isJourneyLoading.value
+                    ? null
+                    : (selected) => sensorCtrl.setJourneyPeriod(selected.first),
+              ),
+            ),
+            if (sensorCtrl.isJourneyLoading.value) ...[
+              const SizedBox(height: 10),
+              const LinearProgressIndicator(minHeight: 2),
+            ],
             const SizedBox(height: 12),
-            if (point == null)
+            if (mapPoints.isEmpty)
               _EmptyMapState(device: device)
             else
               ClipRRect(
@@ -360,9 +422,12 @@ class _LocationMapSection extends StatelessWidget {
                   child: Stack(
                     children: [
                       _OpenStreetMapView(
-                        point: point,
-                        zoom: 16,
-                        onTap: () => _openFullScreenMap(context, point),
+                        key: ValueKey(
+                          '${sensorCtrl.journeyPeriod.value}-${mapPoints.length}',
+                        ),
+                        points: mapPoints,
+                        onTap: () =>
+                            _openFullScreenMap(context, mapPoints, journey),
                       ),
                       Positioned(
                         top: 10,
@@ -374,7 +439,8 @@ class _LocationMapSection extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           child: IconButton(
                             tooltip: 'Phóng to bản đồ',
-                            onPressed: () => _openFullScreenMap(context, point),
+                            onPressed: () =>
+                                _openFullScreenMap(context, mapPoints, journey),
                             icon: const Icon(Icons.open_in_full),
                           ),
                         ),
@@ -387,14 +453,16 @@ class _LocationMapSection extends StatelessWidget {
                             color: Colors.black.withValues(alpha: 0.56),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 10,
                               vertical: 7,
                             ),
                             child: Text(
-                              'Chạm để phóng to',
-                              style: TextStyle(
+                              routePoints.length > 1
+                                  ? '${routePoints.length} điểm GPS'
+                                  : 'Chạm để phóng to',
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
@@ -440,11 +508,21 @@ class _LocationMapSection extends StatelessWidget {
     return null;
   }
 
-  void _openFullScreenMap(BuildContext context, LatLng point) {
+  String _distanceText(double meters) {
+    if (meters < 1000) return '${meters.round()} m';
+    return '${(meters / 1000).toStringAsFixed(2)} km';
+  }
+
+  void _openFullScreenMap(
+    BuildContext context,
+    List<LatLng> points,
+    Journey? journey,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => _FullScreenMapPage(
-          point: point,
+          points: points,
+          journey: journey,
           title: device.licensePlate?.trim().isNotEmpty == true
               ? device.licensePlate!
               : device.deviceId,
@@ -455,22 +533,24 @@ class _LocationMapSection extends StatelessWidget {
 }
 
 class _OpenStreetMapView extends StatelessWidget {
-  final LatLng point;
-  final double zoom;
+  final List<LatLng> points;
   final VoidCallback? onTap;
 
-  const _OpenStreetMapView({
-    required this.point,
-    required this.zoom,
-    this.onTap,
-  });
+  const _OpenStreetMapView({super.key, required this.points, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
       options: MapOptions(
-        initialCenter: point,
-        initialZoom: zoom,
+        initialCenter: points.last,
+        initialZoom: 16,
+        initialCameraFit: points.length > 1
+            ? CameraFit.coordinates(
+                coordinates: points,
+                padding: const EdgeInsets.all(36),
+                maxZoom: 17,
+              )
+            : null,
         onTap: onTap == null ? null : (tapPosition, point) => onTap!(),
         interactionOptions: const InteractionOptions(
           flags:
@@ -484,18 +564,41 @@ class _OpenStreetMapView extends StatelessWidget {
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'mobile_project',
         ),
+        if (points.length > 1)
+          PolylineLayer(
+            polylines: [
+              Polyline(
+                points: points,
+                strokeWidth: 5,
+                color: AppColors.primary,
+                borderStrokeWidth: 2,
+                borderColor: Colors.white,
+              ),
+            ],
+          ),
         MarkerLayer(
           markers: [
             Marker(
-              point: point,
-              width: 52,
-              height: 52,
-              child: const Icon(
-                Icons.location_pin,
-                size: 52,
-                color: AppColors.danger,
+              point: points.first,
+              width: 38,
+              height: 38,
+              child: const _RouteMarker(
+                icon: Icons.trip_origin,
+                color: AppColors.success,
+                tooltip: 'Điểm bắt đầu',
               ),
             ),
+            if (points.length > 1)
+              Marker(
+                point: points.last,
+                width: 42,
+                height: 42,
+                child: const _RouteMarker(
+                  icon: Icons.location_on,
+                  color: AppColors.danger,
+                  tooltip: 'Vị trí cuối',
+                ),
+              ),
           ],
         ),
         RichAttributionWidget(
@@ -506,11 +609,48 @@ class _OpenStreetMapView extends StatelessWidget {
   }
 }
 
+class _RouteMarker extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String tooltip;
+
+  const _RouteMarker({
+    required this.icon,
+    required this.color,
+    required this.tooltip,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 6,
+            ),
+          ],
+        ),
+        child: Icon(icon, color: color, size: 28),
+      ),
+    );
+  }
+}
+
 class _FullScreenMapPage extends StatelessWidget {
-  final LatLng point;
+  final List<LatLng> points;
+  final Journey? journey;
   final String title;
 
-  const _FullScreenMapPage({required this.point, required this.title});
+  const _FullScreenMapPage({
+    required this.points,
+    required this.journey,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -518,7 +658,7 @@ class _FullScreenMapPage extends StatelessWidget {
       appBar: AppBar(title: Text(title)),
       body: Stack(
         children: [
-          _OpenStreetMapView(point: point, zoom: 17),
+          _OpenStreetMapView(points: points),
           Positioned(
             left: 16,
             right: 16,
@@ -538,12 +678,35 @@ class _FullScreenMapPage extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.location_on, color: AppColors.danger),
-                  const SizedBox(width: 8),
+                  const Icon(Icons.route, color: AppColors.primary),
+                  const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
-                      '${point.latitude.toStringAsFixed(6)}, ${point.longitude.toStringAsFixed(6)}',
-                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${journey?.points.length ?? points.length} điểm GPS',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        if (journey?.points.isNotEmpty == true)
+                          Text(
+                            '${DateFormat('dd/MM HH:mm').format(journey!.points.first.createdAt.toLocal())} - '
+                            '${DateFormat('dd/MM HH:mm').format(journey!.points.last.createdAt.toLocal())}',
+                            style: const TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    _distanceText(journey?.distanceMeters ?? 0),
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
@@ -553,6 +716,11 @@ class _FullScreenMapPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _distanceText(double meters) {
+    if (meters < 1000) return '${meters.round()} m';
+    return '${(meters / 1000).toStringAsFixed(2)} km';
   }
 }
 
@@ -909,7 +1077,7 @@ class _SensorDataRow extends StatelessWidget {
             ),
           ),
           Text(
-            DateFormat('HH:mm').format(data.createdAt),
+            DateFormat('HH:mm').format(data.createdAt.toLocal()),
             style: TextStyle(
               color: isDark ? Colors.white54 : AppColors.muted,
               fontSize: 12,

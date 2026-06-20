@@ -62,7 +62,7 @@ class DeviceController extends GetxController {
     device.vehicleStatus = toMoving
         ? VehicleStatus.moving
         : VehicleStatus.parked;
-    devices.refresh();
+    _refreshDeviceCollections();
 
     // Gọi API (bạn cần tạo endpoint này ở backend)
     final success = await _service.updateVehicleStatus(
@@ -73,7 +73,7 @@ class DeviceController extends GetxController {
 
     if (!success) {
       device.vehicleStatus = oldStatus;
-      devices.refresh();
+      _refreshDeviceCollections();
       Get.snackbar(
         "Lỗi",
         "Không thể thay đổi trạng thái xe",
@@ -91,7 +91,7 @@ class DeviceController extends GetxController {
     togglingBuzzerId.value = deviceId;
     final oldBuzzerStatus = device.buzzerStatus;
     device.buzzerStatus = turnOn;
-    devices.refresh();
+    _refreshDeviceCollections();
 
     // Gọi API
     final success = await _service.updateBuzzerStatus(
@@ -103,7 +103,7 @@ class DeviceController extends GetxController {
     // Nếu thất bại → rollback
     if (!success) {
       device.buzzerStatus = oldBuzzerStatus;
-      devices.refresh();
+      _refreshDeviceCollections();
       Get.snackbar(
         "Thất bại",
         "Không thể ${turnOn ? 'bật' : 'tắt'} còi báo động",
@@ -210,6 +210,11 @@ class DeviceController extends GetxController {
     });
 
     filtered.assignAll(result);
+  }
+
+  void _refreshDeviceCollections() {
+    devices.refresh();
+    _applyFilters();
   }
 
   // active device

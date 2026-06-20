@@ -4,7 +4,7 @@ import { CreateDeviceDto } from "./dto/create-device.dto";
 import { randomBytes } from "crypto";
 import { Prisma } from "@prisma/client";
 import { UpdateDeviceDto } from "./dto/update-device.dto";
-import { normalizeLocation } from "src/common/utils/location.util";
+import { haversineDistanceMeters, normalizeLocation } from "src/common/utils/location.util";
 
 @Injectable()
 export class DeviceService{
@@ -292,7 +292,12 @@ export class DeviceService{
     }
 
     //get sensorData by device
-    async getSensorDataByDevice(id: number, userId: number){
+    async getSensorDataByDevice(
+        id: number,
+        userId: number,
+        from?: string,
+        to?: string,
+    ){
         const device = await this.prisma.device.findUnique({where:{id}})
 
         if(!device){
@@ -303,10 +308,121 @@ export class DeviceService{
             throw new ForbiddenException('Bạn không có quyền truy cập thiết bị này')
         }
 
+        const fromDate = this.parseJourneyDate(from, 'from')
+        const toDate = this.parseJourneyDate(to, 'to')
+
+        if (fromDate && toDate && fromDate >= toDate) {
+            throw new BadRequestException('from must be before to')
+        }
+
         return this.prisma.sensorData.findMany({
-            where:{deviceId : id},
+            where:{
+                deviceId : id,
+                createdAt: {
+                    ...(fromDate ? { gte: fromDate } : {}),
+                    ...(toDate ? { lt: toDate } : {}),
+                },
+            },
             orderBy: { createdAt: 'desc' },
         })
+    }
+
+    async getJourneyByDevice(
+        id: number,
+        userId: number,
+        from?: string,
+        to?: string,
+    ) {
+        const device = await this.prisma.device.findUnique({ where: { id } })
+
+        if (!device) {
+            throw new NotFoundException(`not found device: ${id}`)
+        }
+
+        if (device.userId !== userId) {
+            throw new ForbiddenException('Ban khong co quyen truy cap thiet bi nay')
+        }
+
+        const fromDate = this.parseJourneyDate(from, 'from')
+        const toDate = this.parseJourneyDate(to, 'to')
+
+        if (fromDate && toDate && fromDate > toDate) {
+            throw new BadRequestException('from must be before to')
+        }
+
+        const records = await this.prisma.sensorData.findMany({
+            where: {
+                deviceId: id,
+                createdAt: {
+                    ...(fromDate ? { gte: fromDate } : {}),
+                    ...(toDate ? { lte: toDate } : {}),
+                },
+            },
+            orderBy: { createdAt: 'asc' },
+            select: {
+                id: true,
+                location: true,
+                speed: true,
+                createdAt: true,
+            },
+        })
+
+        const points: Array<{
+            id: number
+            lat: number
+            lng: number
+            speed: number | null
+            createdAt: Date
+        }> = []
+        let distanceMeters = 0
+        let ignoredPointCount = 0
+
+        for (const record of records) {
+            const location = normalizeLocation(record.location)
+            if (!location || Math.abs(location.lat) > 90 || Math.abs(location.lng) > 180) {
+                ignoredPointCount++
+                continue
+            }
+
+            const point = { ...location, id: record.id, speed: record.speed, createdAt: record.createdAt }
+            const previous = points.at(-1)
+
+            if (previous) {
+                const segmentMeters = haversineDistanceMeters(previous, point)
+                const elapsedSeconds = (point.createdAt.getTime() - previous.createdAt.getTime()) / 1000
+                const impliedSpeedKmh = elapsedSeconds > 0
+                    ? (segmentMeters / elapsedSeconds) * 3.6
+                    : 0
+
+                // Ignore stationary GPS drift and impossible jumps.
+                if (segmentMeters < 3 || (elapsedSeconds > 0 && impliedSpeedKmh > 200)) {
+                    ignoredPointCount++
+                    continue
+                }
+
+                distanceMeters += segmentMeters
+            }
+
+            points.push(point)
+        }
+
+        return {
+            points,
+            distanceMeters: Math.round(distanceMeters),
+            rawPointCount: records.length,
+            ignoredPointCount,
+        }
+    }
+
+    private parseJourneyDate(value: string | undefined, field: string): Date | undefined {
+        if (!value) return undefined
+
+        const date = new Date(value)
+        if (Number.isNaN(date.getTime())) {
+            throw new BadRequestException(`${field} must be a valid ISO date`)
+        }
+
+        return date
     }
 
 }
