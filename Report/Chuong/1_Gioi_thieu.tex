@@ -1,0 +1,47 @@
+\documentclass[../DoAn.tex]{subfiles}
+\begin{document}
+
+\section{Đặt vấn đề}
+\label{section:1.1}
+Trong những năm gần đây, số lượng phương tiện cá nhân, đặc biệt là xe máy, tại Việt Nam ngày càng gia tăng mạnh mẽ. Xe máy hiện vẫn là phương tiện di chuyển chủ yếu của người dân nhờ tính linh hoạt và chi phí sử dụng phù hợp. Tuy nhiên, cùng với sự gia tăng về số lượng phương tiện là tình trạng mất cắp xe diễn ra ngày càng phổ biến và phức tạp. Các đối tượng trộm cắp liên tục sử dụng những phương thức tinh vi để vô hiệu hóa các biện pháp bảo vệ truyền thống như khóa cơ, khóa càng hoặc hệ thống báo động đơn giản. Điều này gây thiệt hại đáng kể về tài sản
+
+Xuất phát từ thực trạng trên, nhu cầu nâng cao khả năng bảo vệ phương tiện của người dân trở nên cấp thiết. Nhiều người sử dụng xe máy thường phải đối mặt với tâm lý lo lắng khi gửi xe tại nơi công cộng hoặc khi không thể trực tiếp giám sát phương tiện của mình. Điều này đặt ra yêu cầu cần có những giải pháp hỗ trợ người dùng theo dõi và quản lý phương tiện một cách chủ động hơn, góp phần giảm thiểu nguy cơ mất cắp và nâng cao mức độ an toàn cho tài sản cá nhân.
+
+Nếu bài toán này được giải quyết hiệu quả, người dùng sẽ có khả năng nắm bắt tình trạng hoạt động của phương tiện một cách kịp thời, từ đó phát hiện sớm các dấu hiệu bất thường và có biện pháp xử lý phù hợp. Đồng thời, việc nâng cao hiệu quả bảo vệ phương tiện không chỉ giúp giảm thiểu thiệt hại về tài sản mà còn góp phần tăng cường ý thức quản lý và bảo vệ tài sản cá nhân trong cộng đồng. Bên cạnh lĩnh vực chống trộm xe máy, các giải pháp giám sát thông minh còn có tiềm năng mở rộng sang nhiều lĩnh vực khác như quản lý tài sản, giám sát phương tiện vận tải và theo dõi hàng hóa trong quá trình vận chuyển.
+
+
+\section{Mục tiêu và phạm vi đề tài}
+\label{section:1.2}
+
+Hiện nay, trên thị trường Việt Nam đã xuất hiện nhiều sản phẩm hỗ trợ định vị và chống trộm xe máy. Một số sản phẩm tiêu biểu có thể kể đến như thiết bị Smart Motor của Viettel, các thiết bị giám sát hành trình của BA GPS/Bình Anh, thiết bị định vị Protrack, cùng nhiều dòng thiết bị định vị GPS 4G nhỏ gọn khác được cung cấp bởi các đơn vị phân phối thiết bị giám sát phương tiện. Nhìn chung, các sản phẩm này thường cung cấp những chức năng như xác định vị trí phương tiện, xem lại lịch sử hành trình, cảnh báo khi xe có dấu hiệu bất thường, thiết lập vùng an toàn hoặc hỗ trợ quản lý phương tiện thông qua ứng dụng trên điện thoại.
+
+Các sản phẩm định vị xe máy hiện có đã góp phần hỗ trợ người dùng trong việc theo dõi và bảo vệ phương tiện cá nhân. Tuy nhiên, qua khảo sát tổng quan có thể nhận thấy các giải pháp này vẫn tồn tại một số hạn chế nhất định. Một số sản phẩm có chi phí triển khai và duy trì tương đối cao đối với người dùng cá nhân; một số khác phụ thuộc nhiều vào hạ tầng máy chủ và phần mềm của nhà cung cấp nên khả năng tùy biến còn hạn chế. Bên cạnh đó, nhiều thiết bị chủ yếu tập trung vào chức năng định vị và xem lại hành trình, trong khi việc tích hợp đồng thời các chức năng phát hiện bất thường, cảnh báo tức thời, quản lý trạng thái thiết bị và hỗ trợ người dùng tương tác với hệ thống vẫn chưa thật sự linh hoạt.
+
+Từ những phân tích trên, đề tài hướng tới xây dựng một hệ thống chống trộm xe ứng dụng công nghệ IoT có khả năng giám sát trạng thái phương tiện, phát hiện các dấu hiệu bất thường và gửi cảnh báo đến người dùng trong thời gian ngắn. Hệ thống đồng thời hỗ trợ theo dõi vị trí phương tiện, quản lý trạng thái hoạt động và cung cấp giao diện ứng dụng giúp người dùng dễ dàng quan sát, điều khiển và nhận thông tin cảnh báo.
+
+Trong phạm vi đồ án, hệ thống tập trung vào các chức năng chính gồm thu thập dữ liệu từ thiết bị gắn trên xe, phát hiện rung động hoặc thay đổi trạng thái bất thường, gửi cảnh báo đến ứng dụng người dùng, hiển thị vị trí phương tiện trên bản đồ và cho phép người dùng quản lý trạng thái chống trộm từ xa. Đề tài tập trung xây dựng mô hình hệ thống ở quy mô thử nghiệm, phục vụ mục tiêu nghiên cứu, thiết kế và đánh giá khả năng hoạt động của giải pháp. 
+
+\section{Định hướng giải pháp}
+\label{section:1.3}
+Từ mục tiêu và phạm vi đã xác định, đề tài lựa chọn định hướng xây dựng hệ thống theo mô hình Internet vạn vật, kết hợp giữa thiết bị nhúng, máy chủ trung gian và ứng dụng di động. Cách tiếp cận này cho phép thiết bị gắn trên phương tiện có thể thu thập dữ liệu từ môi trường thực tế, truyền thông tin về hệ thống xử lý trung tâm và cung cấp dữ liệu cho người dùng thông qua ứng dụng trên điện thoại. Định hướng này phù hợp với bài toán chống trộm xe do hệ thống cần có khả năng giám sát từ xa, cảnh báo kịp thời và hỗ trợ người dùng theo dõi trạng thái phương tiện trong thời gian thực.
+
+Giải pháp được đề xuất gồm ba thành phần chính: thiết bị phần cứng gắn trên xe, hệ thống máy chủ và ứng dụng di động. Thiết bị phần cứng có nhiệm vụ thu thập dữ liệu từ các cảm biến, xác định trạng thái của phương tiện và gửi thông tin về máy chủ. Máy chủ đóng vai trò tiếp nhận, xử lý, lưu trữ dữ liệu và cung cấp các giao tiếp cần thiết giữa thiết bị và ứng dụng di động. Ứng dụng di động được xây dựng nhằm hỗ trợ người dùng theo dõi vị trí, trạng thái phương tiện, nhận thông báo cảnh báo và thực hiện một số thao tác quản lý hệ thống từ xa.
+
+Đóng góp chính của đồ án là thiết kế và xây dựng một hệ thống chống trộm xe hoàn chỉnh, có chi phí triển khai thấp và phù hợp với quy mô thử nghiệm thực tế. Kết quả đạt được của đề tài là một hệ thống có khả năng giám sát trạng thái phương tiện, phát hiện dấu hiệu bất thường, gửi cảnh báo kịp thời đến người dùng và hỗ trợ theo dõi vị trí xe khi cần thiết.
+
+
+\section{Bố cục đồ án}
+\label{section:1.4}
+Phần còn lại của báo cáo đồ án tốt nghiệp được tổ chức như sau.
+
+Chương 2, Khảo sát bài toán và các giải pháp liên quan, trình bày quá trình khảo sát nhu cầu thực tế đối với hệ thống chống trộm xe máy và các giải pháp định vị, giám sát phương tiện hiện có trên thị trường. Nội dung chương tập trung phân tích một số sản phẩm tiêu biểu, đánh giá ưu điểm và hạn chế của các giải pháp hiện nay, từ đó làm cơ sở để xác định yêu cầu đối với hệ thống được xây dựng trong đồ án.
+
+Chương 3, Cơ sở công nghệ sử dụng trong hệ thống, trình bày các công nghệ, nền tảng và công cụ được sử dụng trong quá trình phát triển hệ thống. Các nội dung chính bao gồm công nghệ Internet vạn vật, thiết bị nhúng, cảm biến, công nghệ định vị, phương thức truyền thông giữa thiết bị và máy chủ, cơ sở dữ liệu, công nghệ xây dựng máy chủ và công nghệ phát triển ứng dụng di động.
+
+Chương 4, Kết quả xây dựng và thực nghiệm hệ thống,em sẽ trình bày kết quả triển khai hệ thống sau khi các thành phần được xây dựng và tích hợp. Chương này mô tả các kịch bản thử nghiệm đối với những chức năng chính như giám sát trạng thái phương tiện, phát hiện dấu hiệu bất thường, gửi cảnh báo, cập nhật vị trí và hiển thị thông tin trên ứng dụng di động. Dựa trên kết quả thu được, chương đưa ra đánh giá về khả năng hoạt động và mức độ đáp ứng yêu cầu của hệ thống.
+
+Chương 5, Giải pháp đề xuất và đóng góp của đồ án, trình bày giải pháp được xây dựng trong đề tài và các đóng góp chính của đồ án. Nội dung chương tập trung mô tả kiến trúc tổng thể, thiết kế các thành phần chức năng, luồng xử lý dữ liệu và cách thức phối hợp giữa các thiết bị. Bên cạnh đó, chương cũng làm rõ những điểm đóng góp của hệ thống so với các giải pháp đã khảo sát.
+
+Chương 6, Kết luận và hướng phát triển, trình bày tổng kết các kết quả đã đạt được trong quá trình thực hiện đồ án. Chương này đánh giá mức độ hoàn thành so với mục tiêu ban đầu, chỉ ra những hạn chế còn tồn tại và đề xuất một số hướng cải tiến trong tương lai nhằm nâng cao độ ổn định, độ chính xác, khả năng mở rộng và tính ứng dụng thực tế của hệ thống.
+
+\end{document}

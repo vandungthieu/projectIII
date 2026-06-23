@@ -71,7 +71,6 @@ class DeviceService {
         body: jsonEncode({"vehicleStatus": status}),
       );
 
-
       return response.statusCode == 200;
     } catch (e) {
       return false;
@@ -81,7 +80,7 @@ class DeviceService {
   // dieu khien coi
   Future<bool> updateBuzzerStatus({
     required String deviceId,
-    required bool turnOn,  // true = bật, false = tắt
+    required bool turnOn, // true = bật, false = tắt
     required String token,
   }) async {
     final url = Uri.parse("$baseUrl/buzzer"); // endpoint của bạn
@@ -99,9 +98,7 @@ class DeviceService {
         }),
       );
 
-
       return response.statusCode == 201;
-
     } catch (e) {
       return false;
     }
@@ -121,16 +118,18 @@ class DeviceService {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token",
       },
-      body: jsonEncode({
-        "deviceId": deviceId,
-        "deviceKey": deviceKey,
-      }),
+      body: jsonEncode({"deviceId": deviceId, "deviceKey": deviceKey}),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      throw Exception("Error: ${response.statusCode} - ${response.body}");
+      try {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        throw Exception(body['message'] ?? 'Không thể kích hoạt thiết bị');
+      } on FormatException {
+        throw Exception('Không thể kích hoạt thiết bị');
+      }
     }
   }
 
@@ -159,10 +158,10 @@ class DeviceService {
 
   // chỉnh sửa
   Future<bool> updateMyDevice(
-      int deviceId,
-      String licensePlate,
-      String token,
-      ) async {
+    int deviceId,
+    String licensePlate,
+    String token,
+  ) async {
     final url = Uri.parse('$baseUrl/devices/my-device/$deviceId');
 
     final response = await http.patch(
@@ -171,9 +170,7 @@ class DeviceService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({
-        'licensePlate': licensePlate,
-      }),
+      body: jsonEncode({'licensePlate': licensePlate}),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -183,8 +180,4 @@ class DeviceService {
       throw Exception(body['message'] ?? 'Update device failed');
     }
   }
-
-
-
-
 }

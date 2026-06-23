@@ -12,13 +12,12 @@ class ActiveDeviceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Activate Device",
+          "Kích hoạt thiết bị",
           style: AppTextStyle.withColor(
             AppTextStyle.h2,
             Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
@@ -33,16 +32,16 @@ class ActiveDeviceScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
 
           child: Form(
-            key: _formKey,   // 👈 FORM WRAPPER
+            key: formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
-                  "Enter your device information",
+                  "Nhập thông tin thiết bị của bạn",
                   style: AppTextStyle.withColor(
                     AppTextStyle.h3,
-                    Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                    Theme.of(context).textTheme.bodyLarge?.color ??
+                        Colors.black,
                   ),
                 ),
 
@@ -50,22 +49,23 @@ class ActiveDeviceScreen extends StatelessWidget {
 
                 // Device ID
                 Text(
-                  "Device ID",
+                  "Mã thiết bị",
                   style: AppTextStyle.withColor(
                     AppTextStyle.buttonMedium,
-                    Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                    Theme.of(context).textTheme.bodyLarge?.color ??
+                        Colors.black,
                   ),
                 ),
                 const SizedBox(height: 8),
 
                 CustomTextfield(
-                  label: 'Enter device ID',
+                  label: 'Nhập mã thiết bị',
                   prefixIcon: Icons.badge_outlined,
                   keyboardType: TextInputType.text,
                   controller: _deviceIdController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter device ID';
+                      return 'Vui lòng nhập mã thiết bị';
                     }
                     return null;
                   },
@@ -75,22 +75,23 @@ class ActiveDeviceScreen extends StatelessWidget {
 
                 // Device Key
                 Text(
-                  "Device Key",
+                  "Khóa thiết bị",
                   style: AppTextStyle.withColor(
                     AppTextStyle.buttonMedium,
-                    Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                    Theme.of(context).textTheme.bodyLarge?.color ??
+                        Colors.black,
                   ),
                 ),
                 const SizedBox(height: 8),
 
                 CustomTextfield(
-                  label: 'Enter device key',
+                  label: 'Nhập khóa thiết bị',
                   prefixIcon: Icons.key_outlined,
                   keyboardType: TextInputType.text,
                   controller: _deviceKeyController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter device key';
+                      return 'Vui lòng nhập khóa thiết bị';
                     }
                     return null;
                   },
@@ -110,7 +111,7 @@ class ActiveDeviceScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
+                        if (formKey.currentState!.validate()) {
                           final id = _deviceIdController.text.trim();
                           final key = _deviceKeyController.text.trim();
 
@@ -118,7 +119,7 @@ class ActiveDeviceScreen extends StatelessWidget {
                         }
                       },
                       child: Text(
-                        "Activate Device",
+                        "Kích hoạt thiết bị",
                         style: AppTextStyle.buttonMedium,
                       ),
                     ),

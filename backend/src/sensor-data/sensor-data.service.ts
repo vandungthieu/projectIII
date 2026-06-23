@@ -160,17 +160,17 @@ export class SensorDataService {
 
     const messageParts: string[] = [];
     if (speedAnomaly) {
-      messageParts.push(`speed ${speed} km/h over threshold`);
+      messageParts.push(`tốc độ ${speed} km/h vượt ngưỡng an toàn`);
     }
     if (distanceAnomaly && distanceMeters !== null) {
       messageParts.push(
-        `moved ${distanceMeters.toFixed(0)} m away from parked location`,
+        `xe đã di chuyển ${distanceMeters.toFixed(0)} m khỏi vị trí bảo vệ`,
       );
     }
 
     const alertMessage = messageParts.length
-      ? `Suspicious vehicle behavior: ${messageParts.join(" and ")}.`
-      : `Vehicle is moving abnormally at ${speed} km/h!`;
+      ? `Phát hiện xe di chuyển bất thường: ${messageParts.join(" và ")}.`
+      : `Xe đang di chuyển bất thường với tốc độ ${speed} km/h!`;
 
     await this.prisma.device.update({
       where: { id: device.id },
@@ -207,7 +207,7 @@ export class SensorDataService {
       });
 
       await this.firebaseMessaging.sendToUser(device.userId, {
-        title: shouldMarkStolen ? "Canh bao khan cap" : "Canh bao moi",
+        title: shouldMarkStolen ? "Cảnh báo khẩn cấp" : "Cảnh báo mới",
         body: `${device.licensePlate ?? device.deviceId}: ${alert.message}`,
         data: {
           type: "alert",

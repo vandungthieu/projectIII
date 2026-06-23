@@ -1,0 +1,133 @@
+\ttl@change@i {\@ne }{chapter}{0.0cm}{\bfseries \vspace {0.3cm}}{{\bfseries {\scshape } CHƯƠNG \thecontentslabel .\ }}{}{\titlerule *[0.3pc]{.}\contentspage }\relax 
+\ttl@change@v {chapter}{}{}{}\relax 
+\ttl@change@i {\@ne }{section}{0.0cm}{\vspace {0.3cm}}{\thecontentslabel \ }{}{\titlerule *[0.3pc]{.}\contentspage }\relax 
+\ttl@change@v {section}{}{}{}\relax 
+\ttl@change@i {\@ne }{subsection}{1.0cm}{\vspace {0.3cm}}{\thecontentslabel \ }{}{\titlerule *[0.3pc]{.}\contentspage }\relax 
+\ttl@change@v {subsection}{}{}{}\relax 
+\thispagestyle {empty}
+\contentsline {section}{\hbox to\@tempdima {\hfil } DANH MỤC HÌNH VẼ}{v}{section*.5}%
+\contentsline {section}{\hbox to\@tempdima {\hfil } DANH MỤC BẢNG BIỂU}{vi}{section*.7}%
+\contentsline {section}{DANH MỤC TỪ VIẾT TẮT}{vii}{section*.9}%
+\contentsline {chapter}{\numberline {1}GIỚI THIỆU ĐỀ TÀI}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Đặt vấn đề}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Mục tiêu và phạm vi đề tài}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Định hướng giải pháp}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Bố cục đồ án}{3}{section.1.4}%
+\contentsline {chapter}{\numberline {2}KHẢO SÁT VÀ PHÂN TÍCH YÊU CẦU}{4}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Khảo sát hiện trạng}{4}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Tổng quan chức năng}{5}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Biểu đồ use case tổng quát}{6}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Biểu đồ use case phân rã Quản lý thiết bị cá nhân}{8}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Biểu đồ use case phân rã Xem trạng thái thiết bị}{9}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Biểu đồ use case phân rã Gửi dữ liệu cảm biến}{10}{subsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.2.5}Biểu đồ use case phân rã Quan lý tài khoản cá nhân}{11}{subsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.2.6}Quy trình nghiệp vụ Kích hoạt thiết bị}{12}{subsection.2.2.6}%
+\contentsline {subsection}{\numberline {2.2.7}Quy trình nghiệp vụ Giám sát và cảnh báo trộm}{13}{subsection.2.2.7}%
+\contentsline {section}{\numberline {2.3}Đặc tả chức năng}{14}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Đặc tả use case Đăng nhập}{14}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Đặc tả use case Kích hoạt thiết bị}{15}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Đặc tả use case Xem trạng thái thiết bị}{16}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Đặc tả use case Gửi dữ liệu cảm biến}{17}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}Đặc tả use case Phát hiện nguy cơ trộm}{18}{subsection.2.3.5}%
+\contentsline {subsection}{\numberline {2.3.6}Đặc tả use case Nhận cảnh báo trộm}{19}{subsection.2.3.6}%
+\contentsline {section}{\numberline {2.4}Yêu cầu phi chức năng}{20}{section.2.4}%
+\contentsline {chapter}{\numberline {3}CÔNG NGHỆ SỬ DỤNG}{22}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Kiến trúc công nghệ tổng thể}{22}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Công nghệ xây dựng khối máy chủ}{22}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}NestJS}{23}{subsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {a}Giới thiệu công nghệ}{23}{subsubsection.3.2.1.1}%
+\contentsline {subsubsection}{\numberline {b}Ứng dụng trong đồ án}{23}{subsubsection.3.2.1.2}%
+\contentsline {subsection}{\numberline {3.2.2}PostgreSQL}{23}{subsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {a}Giới thiệu công nghệ}{23}{subsubsection.3.2.2.1}%
+\contentsline {subsubsection}{\numberline {b}Ứng dụng trong đồ án}{23}{subsubsection.3.2.2.2}%
+\contentsline {section}{\numberline {3.3}Công nghệ xây dựng ứng dụng di động}{24}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Flutter}{24}{subsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {a}Giới thiệu công nghệ}{24}{subsubsection.3.3.1.1}%
+\contentsline {subsubsection}{\numberline {b}Ứng dụng trong đồ án}{24}{subsubsection.3.3.1.2}%
+\contentsline {subsection}{\numberline {3.3.2}Dart}{25}{subsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {a}Giới thiệu công nghệ}{25}{subsubsection.3.3.2.1}%
+\contentsline {subsubsection}{\numberline {b}Ứng dụng trong đồ án}{25}{subsubsection.3.3.2.2}%
+\contentsline {section}{\numberline {3.4}Công nghệ xây dựng khối thiết bị IoT}{26}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}ESP32}{26}{subsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {a}Giới thiệu công nghệ}{26}{subsubsection.3.4.1.1}%
+\contentsline {subsubsection}{\numberline {b}Ứng dụng trong đồ án}{26}{subsubsection.3.4.1.2}%
+\contentsline {subsection}{\numberline {3.4.2}Module A7680C}{27}{subsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {a}Giới thiệu công nghệ}{27}{subsubsection.3.4.2.1}%
+\contentsline {subsubsection}{\numberline {b}Ứng dụng trong đồ án}{27}{subsubsection.3.4.2.2}%
+\contentsline {subsection}{\numberline {3.4.3}Module GPS NEO-6M}{28}{subsection.3.4.3}%
+\contentsline {subsubsection}{\numberline {a}Giới thiệu công nghệ}{28}{subsubsection.3.4.3.1}%
+\contentsline {subsubsection}{\numberline {b}Ứng dụng trong đồ án}{28}{subsubsection.3.4.3.2}%
+\contentsline {subsection}{\numberline {3.4.4}Tổng kết khối thiết bị IoT}{29}{subsection.3.4.4}%
+\contentsline {chapter}{\numberline {4}PHÂN TÍCH THIẾT KẾ VÀ ĐÁNH GIÁ HỆ THỐNG}{30}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Thiết kế kiến trúc}{30}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Lựa chọn kiến trúc phần mềm}{30}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Thiết kế tổng quan}{31}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Thiết kế tổng quan hệ thống}{31}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Thiết kế chi tiết gói}{33}{subsection.4.1.4}%
+\contentsline {section}{\numberline {4.2}Thiết kế chi tiết}{35}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Thiết kế giao diện}{35}{subsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {a}Mục tiêu thiết kế giao diện}{35}{subsubsection.4.2.1.1}%
+\contentsline {subsubsection}{\numberline {b}Quy chuẩn thiết kế giao diện}{35}{subsubsection.4.2.1.2}%
+\contentsline {subsubsection}{\numberline {c}Một số hình ảnh thiết kế}{37}{subsubsection.4.2.1.3}%
+\contentsline {paragraph}{Thanh điều hướng dưới}{37}{paragraph*.22}%
+\contentsline {paragraph}{Màn hình trang chủ}{37}{paragraph*.24}%
+\contentsline {paragraph}{Màn hình chi tiết thiết bị}{38}{paragraph*.26}%
+\contentsline {paragraph}{Màn hình cảnh báo}{39}{paragraph*.28}%
+\contentsline {subsection}{\numberline {4.2.2}Thiết kế lớp}{40}{subsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {a}Lớp UserService}{40}{subsubsection.4.2.2.1}%
+\contentsline {subsubsection}{\numberline {b}Lớp DeviceService}{41}{subsubsection.4.2.2.2}%
+\contentsline {subsubsection}{\numberline {c}Lớp SensorDataService}{42}{subsubsection.4.2.2.3}%
+\contentsline {subsubsection}{\numberline {d}Lớp MqttService}{43}{subsubsection.4.2.2.4}%
+\contentsline {subsubsection}{\numberline {e}Biểu đồ tuần tự gửi cảnh báo}{44}{subsubsection.4.2.2.5}%
+\contentsline {subsection}{\numberline {4.2.3}Thiết kế cơ sở dữ liệu}{46}{subsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {a}Biểu đồ thực thể liên kết}{46}{subsubsection.4.2.3.1}%
+\contentsline {subsubsection}{\numberline {b}Thiết kế cơ sở dữ liệu trong PostgreSQL}{47}{subsubsection.4.2.3.2}%
+\contentsline {section}{\numberline {4.3}Xây dựng ứng dụng}{49}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Thư viện và công cụ sử dụng}{49}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Kết quả đạt được}{50}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Minh họa các chức năng chính}{52}{subsection.4.3.3}%
+\contentsline {subsubsection}{\numberline {a}Màn hình trang chủ}{52}{subsubsection.4.3.3.1}%
+\contentsline {subsubsection}{\numberline {b}Màn hình cảnh báo}{53}{subsubsection.4.3.3.2}%
+\contentsline {subsubsection}{\numberline {c}Màn hình chi tiết cảnh báo}{54}{subsubsection.4.3.3.3}%
+\contentsline {subsubsection}{\numberline {d}Màn hình thiết bị}{55}{subsubsection.4.3.3.4}%
+\contentsline {subsubsection}{\numberline {e}Màn hình chi tiết thiết bị}{56}{subsubsection.4.3.3.5}%
+\contentsline {subsubsection}{\numberline {f}Màn hình kích hoạt thiết bị}{57}{subsubsection.4.3.3.6}%
+\contentsline {subsubsection}{\numberline {g}Màn hình tài khoản cá nhân}{58}{subsubsection.4.3.3.7}%
+\contentsline {section}{\numberline {4.4}Kiểm thử}{59}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Kỹ thuật kiểm thử}{59}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Kiểm thử chức năng kích hoạt thiết bị}{59}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Kiểm thử chức năng phát hiện và gửi cảnh báo}{60}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}Kiểm thử chức năng điều khiển còi}{62}{subsection.4.4.4}%
+\contentsline {subsection}{\numberline {4.4.5}Công cụ kiểm thử}{62}{subsection.4.4.5}%
+\contentsline {subsection}{\numberline {4.4.6}Tổng kết kiểm thử}{63}{subsection.4.4.6}%
+\contentsline {section}{\numberline {4.5}Triển khai}{63}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Mô hình triển khai}{63}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Quy trình triển khai}{64}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Kết quả triển khai thử nghiệm}{64}{subsection.4.5.3}%
+\contentsline {chapter}{\numberline {5}CÁC GIẢI PHÁP VÀ ĐÓNG GÓP NỔI BẬT}{67}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Giới thiệu chương}{67}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Giải thuật phát hiện xe di chuyển bất thường}{67}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Bài toán và khó khăn}{67}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Giải pháp đề xuất}{67}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Kết quả đạt được và đánh giá}{69}{subsection.5.2.3}%
+\contentsline {section}{\numberline {5.3}Cơ chế cảnh báo đa kênh}{69}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Bài toán và khó khăn}{69}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Giải pháp đề xuất}{70}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Kết quả đạt được và đánh giá}{70}{subsection.5.3.3}%
+\contentsline {section}{\numberline {5.4}Tái tạo hành trình và tính quãng đường từ dữ liệu GPS}{71}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Bài toán và khó khăn}{71}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Giải pháp đề xuất}{71}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}Kết quả đạt được và đánh giá}{72}{subsection.5.4.3}%
+\contentsline {section}{\numberline {5.5}Quản lý vòng đời và quyền điều khiển thiết bị IoT}{72}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Bài toán và khó khăn}{72}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Giải pháp đề xuất}{72}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}Kết quả đạt được và đánh giá}{73}{subsection.5.5.3}%
+\contentsline {section}{\numberline {5.6}Tổng kết chương}{73}{section.5.6}%
+\contentsline {chapter}{\numberline {6}KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}{74}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Kết luận}{74}{section.6.1}%
+\contentsline {section}{\numberline {6.2}So sánh với các sản phẩm trên thị trường}{74}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Bài học kinh nghiệm }{75}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Hạn chế}{75}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Hướng phát triển}{76}{section.6.5}%
+\contentsline {chapter}{TÀI LIỆU THAM KHẢO}{78}{section*.53}%
+\contentsfinish 

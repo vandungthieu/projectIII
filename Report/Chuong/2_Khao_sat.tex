@@ -1,0 +1,442 @@
+\documentclass[../DoAn.tex]{subfiles}
+\begin{document}
+Trong Chương 1, đồ án đã trình bày bối cảnh thực tế, mục tiêu, phạm vi và định hướng giải pháp cho bài toán xây dựng hệ thống chống trộm xe ứng dụng công nghệ IoT. Trên cơ sở đó, Chương 2 tập trung khảo sát hiện trạng và phân tích các yêu cầu cần có đối với hệ thống. Đây là bước quan trọng nhằm làm rõ nhu cầu thực tế của người dùng, các chức năng cần xây dựng và những ràng buộc mà hệ thống cần đáp ứng trước khi đi vào lựa chọn công nghệ, thiết kế và triển khai.
+
+Nội dung chương này trước hết trình bày khảo sát một số sản phẩm và giải pháp định vị, chống trộm phương tiện đang có trên thị trường. Từ kết quả khảo sát, chương phân tích ưu điểm, hạn chế của các giải pháp hiện có và rút ra các yêu cầu đối với hệ thống được xây dựng trong đồ án. Tiếp theo, chương mô tả tổng quan các chức năng chính của hệ thống thông qua biểu đồ use case, xác định các tác nhân tham gia và đặc tả một số chức năng quan trọng. Cuối cùng, chương trình bày các yêu cầu phi chức năng liên quan đến hiệu năng, độ tin cậy, tính dễ sử dụng và khả năng mở rộng của hệ thống.
+
+
+\section{Khảo sát hiện trạng}
+\label{section:2.1}
+Trong những năm gần đây, nhu cầu giám sát và bảo vệ phương tiện cá nhân ngày càng được quan tâm, đặc biệt đối với xe máy. Bên cạnh các phương pháp bảo vệ truyền thống như khóa cơ, khóa càng hoặc còi báo động độc lập, trên thị trường đã xuất hiện nhiều thiết bị định vị và chống trộm sử dụng công nghệ GPS, mạng di động và ứng dụng trên điện thoại thông minh. Các sản phẩm này cho phép người dùng theo dõi vị trí phương tiện, xem lại lịch sử hành trình, nhận cảnh báo khi có dấu hiệu bất thường và trong một số trường hợp có thể hỗ trợ điều khiển phương tiện từ xa.
+
+Một trong những nhóm sản phẩm phổ biến là các thiết bị định vị xe máy của Viettel Smart Motor. Dòng Smart Motor S1 tập trung vào chức năng định vị GPS, giám sát hành trình và quản lý vị trí xe thông qua ứng dụng. Trong khi đó, dòng Smart Motor S2 được bổ sung thêm các chức năng chống trộm như cảnh báo qua ứng dụng, cảnh báo khi xe bị mở khóa, rung lắc, vượt quá phạm vi cho phép, quá tốc độ, đồng thời hỗ trợ tắt máy xe từ xa. Các thiết bị này có ưu điểm là sử dụng hạ tầng mạng di động và hệ thống dịch vụ có sẵn, phù hợp với người dùng có nhu cầu lắp đặt nhanh và sử dụng trực tiếp. Tuy nhiên, người dùng thường phụ thuộc vào thiết bị, ứng dụng và hạ tầng dịch vụ của nhà cung cấp, trong khi khả năng tùy biến hoặc mở rộng chức năng theo nhu cầu riêng còn hạn chế.
+
+Ngoài ra, thị trường còn có các thiết bị định vị phương tiện như Protrack VT05F và một số thiết bị GPS 4G nhỏ gọn khác. Các thiết bị này thường hỗ trợ định vị GPS, ghi lại lịch sử hành trình, thiết lập hàng rào địa lý, cảnh báo rung lắc, cảnh báo quá tốc độ hoặc cảnh báo khi có thay đổi trạng thái nguồn điện. Một số sản phẩm còn có khả năng chống nước và được sử dụng cho nhiều loại phương tiện như xe máy, ô tô, xe công trình hoặc phương tiện giao hàng. Nhóm sản phẩm này có ưu điểm là đa dạng về mẫu mã, dễ tìm mua và đáp ứng được các nhu cầu giám sát cơ bản. Tuy nhiên, các chức năng thường được thiết kế theo dạng đóng gói sẵn, ít cho phép người dùng can thiệp vào cách xử lý dữ liệu, cách gửi cảnh báo hoặc cách tích hợp với các hệ thống phần mềm khác.
+
+Bên cạnh các thiết bị thương mại, một số giải pháp chống trộm xe máy phổ thông hiện nay vẫn chủ yếu dựa trên còi báo động, cảm biến rung hoặc khóa điện tử. Các giải pháp này có chi phí thấp và dễ lắp đặt, nhưng phạm vi hoạt động còn hạn chế do chỉ cảnh báo tại chỗ hoặc chỉ tác động trực tiếp lên xe. Trong trường hợp người dùng ở xa phương tiện, các cảnh báo dạng âm thanh có thể không phát huy hiệu quả. Ngoài ra, các hệ thống này thường không cung cấp khả năng theo dõi vị trí, lưu trữ lịch sử hoạt động hoặc quản lý trạng thái phương tiện thông qua ứng dụng.
+
+Từ quá trình khảo sát có thể nhận thấy các sản phẩm định vị và chống trộm xe máy hiện nay đã hỗ trợ tốt một số nhu cầu quan trọng như xác định vị trí phương tiện, cảnh báo khi xe có dấu hiệu bất thường và quản lý hành trình. Tuy nhiên, các giải pháp thương mại thường có chi phí triển khai và duy trì nhất định, phụ thuộc nhiều vào nền tảng của nhà cung cấp và khó tùy biến theo mục tiêu nghiên cứu hoặc thử nghiệm. Trong khi đó, các giải pháp chống trộm truyền thống có chi phí thấp hơn nhưng thiếu khả năng giám sát từ xa, thiếu cơ chế lưu trữ dữ liệu và chưa hỗ trợ tương tác linh hoạt với người dùng.
+
+Từ những hạn chế trên, đồ án hướng tới xây dựng một hệ thống chống trộm xe ứng dụng công nghệ IoT ở quy mô thử nghiệm, có khả năng kết hợp giữa giám sát trạng thái phương tiện, phát hiện dấu hiệu bất thường, gửi cảnh báo đến người dùng và hỗ trợ theo dõi vị trí xe. Hệ thống được định hướng phát triển theo tiêu chí chi phí thấp, dễ triển khai, có khả năng tùy biến và phù hợp với mục tiêu học tập, nghiên cứu cũng như kiểm chứng hoạt động trên thiết bị thật.
+
+\section{Tổng quan chức năng}
+\label{section:2.2}
+
+Dựa trên kết quả khảo sát hiện trạng và mục tiêu của đề tài, hệ thống chống trộm xe ứng dụng công nghệ IoT được xây dựng nhằm hỗ trợ người dùng giám sát, quản lý và bảo vệ phương tiện từ xa. Ở mức tổng quan, hệ thống cần cung cấp các chức năng chính liên quan đến quản lý tài khoản, quản lý thiết bị, theo dõi trạng thái phương tiện, giám sát vị trí, nhận cảnh báo và điều khiển chế độ chống trộm.
+
+Trước hết, hệ thống cho phép người dùng đăng ký, đăng nhập và quản lý thông tin tài khoản để đảm bảo chỉ những người dùng hợp lệ mới có thể truy cập và sử dụng các chức năng của ứng dụng. Sau khi đăng nhập, người dùng có thể liên kết phương tiện với thiết bị chống trộm tương ứng, từ đó quản lý thông tin xe và trạng thái hoạt động của thiết bị thông qua ứng dụng di động.
+
+Đối với chức năng giám sát phương tiện, hệ thống hỗ trợ hiển thị trạng thái hiện tại của xe, bao gồm trạng thái bật hoặc tắt chế độ chống trộm, trạng thái kết nối của thiết bị và các thông tin liên quan đến hoạt động của phương tiện. Khi thiết bị phát hiện dấu hiệu bất thường như rung động hoặc thay đổi trạng thái ngoài ý muốn, hệ thống sẽ gửi cảnh báo đến người dùng nhằm hỗ trợ phát hiện sớm nguy cơ mất an toàn.
+
+Bên cạnh chức năng cảnh báo, hệ thống còn hỗ trợ theo dõi vị trí của phương tiện. Thông tin vị trí được gửi từ thiết bị về máy chủ và hiển thị trên ứng dụng di động, giúp người dùng quan sát vị trí xe trong trường hợp cần thiết. Chức năng này có vai trò quan trọng trong việc hỗ trợ tìm kiếm phương tiện khi xảy ra tình huống mất cắp hoặc di chuyển bất thường.
+
+Ngoài các chức năng giám sát và cảnh báo, người dùng có thể thực hiện một số thao tác điều khiển từ xa đối với hệ thống, chẳng hạn như bật hoặc tắt chế độ chống trộm, kiểm tra trạng thái thiết bị và cập nhật thông tin phương tiện. Các chức năng này giúp người dùng chủ động hơn trong quá trình quản lý phương tiện, đồng thời tăng tính linh hoạt của hệ thống trong các tình huống sử dụng thực tế.
+
+Tổng quan các chức năng chính của hệ thống được thể hiện thông qua biểu đồ use case ở các mục tiếp theo. Biểu đồ use case giúp xác định các tác nhân tham gia hệ thống, các nhóm chức năng chính và mối quan hệ giữa người dùng với hệ thống chống trộm xe.
+
+
+\subsection{Biểu đồ use case tổng quát}
+\label{subsection:2.2.1}
+
+Biểu đồ use case tổng quát của hệ thống được xây dựng nhằm mô tả các chức năng chính của hệ thống và mối quan hệ giữa các tác nhân với các chức năng đó. Trong hệ thống, có hai tác nhân chính tham gia tương tác là Người dùng và Device IoT. Người dùng là tác nhân sử dụng ứng dụng di động để quản lý tài khoản, quản lý thiết bị, theo dõi trạng thái phương tiện và nhận các cảnh báo khi hệ thống phát hiện nguy cơ mất an toàn. Device IoT là thiết bị phần cứng được gắn trên phương tiện, có nhiệm vụ thu thập dữ liệu cảm biến và gửi dữ liệu về hệ thống thông qua giao thức MQTT.
+
+Đối với tác nhân Người dùng, hệ thống cung cấp các chức năng cơ bản gồm đăng ký tài khoản và đăng nhập. Hai chức năng này giúp xác thực người dùng trước khi cho phép truy cập vào các chức năng quản lý và giám sát phương tiện. Sau khi đăng nhập thành công, người dùng có thể thực hiện quản lý tài khoản cá nhân, quản lý thiết bị cá nhân, xem trạng thái thiết bị, xem lịch sử dữ liệu và nhận cảnh báo trộm. Các chức năng này hỗ trợ người dùng theo dõi thông tin phương tiện, kiểm tra trạng thái hoạt động của thiết bị chống trộm và nắm bắt các sự kiện bất thường trong quá trình sử dụng.
+
+Đối với tác nhân Device IoT, chức năng chính là gửi dữ liệu cảm biến về hệ thống. Trước khi dữ liệu được xử lý, thiết bị cần được xác thực nhằm đảm bảo dữ liệu gửi lên đến từ thiết bị hợp lệ. Sau đó, hệ thống sử dụng dữ liệu cảm biến để phát hiện nguy cơ trộm hoặc các dấu hiệu bất thường liên quan đến phương tiện. Khi phát hiện nguy cơ trộm, hệ thống thực hiện chức năng gửi cảnh báo đến người dùng để hỗ trợ người dùng kịp thời kiểm tra và xử lý tình huống.
+
+Trong biểu đồ, quan hệ \textit{include} được sử dụng để thể hiện các chức năng bắt buộc được thực hiện trong quá trình xử lý một chức năng lớn hơn. Cụ thể, use case “Gửi dữ liệu cảm biến” bao gồm use case “Xác thực thiết bị” và “Phát hiện nguy cơ trộm”, vì hệ thống cần kiểm tra tính hợp lệ của thiết bị trước khi xử lý dữ liệu và đánh giá trạng thái an toàn của phương tiện. Use case “Phát hiện nguy cơ trộm” bao gồm use case “Nhận cảnh báo trộm”, do cảnh báo được gửi đến người dùng khi hệ thống xác định có dấu hiệu bất thường. Tổng thể, biểu đồ use case cho thấy hệ thống tập trung vào hai nhóm chức năng chính: nhóm chức năng phục vụ người dùng quản lý và giám sát phương tiện, và nhóm chức năng phục vụ thiết bị IoT gửi dữ liệu, hỗ trợ phát hiện nguy cơ trộm.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/UC_tong_quan.png}
+    \caption{Biểu đồ Use Case tổng quan của hệ thống}
+    \label{fig:usecase-overview}
+\end{figure}
+
+\subsection{Biểu đồ use case phân rã Quản lý thiết bị cá nhân}
+\label{subsection:2.2.2}
+Biểu đồ use case phân rã nhóm chức năng “Quản lý thiết bị cá nhân” mô tả các thao tác chính mà người dùng có thể thực hiện đối với thiết bị chống trộm được liên kết với tài khoản của mình. Trong nhóm chức năng này, tác nhân tham gia là Người dùng, thông qua ứng dụng di động để quản lý các thiết bị IoT gắn trên phương tiện.
+
+Use case “Quản lý thiết bị cá nhân” được phân rã thành bốn chức năng chính gồm xem danh sách thiết bị, kích hoạt thiết bị, chỉnh sửa thông tin thiết bị và xóa thiết bị. Chức năng xem danh sách thiết bị giúp người dùng theo dõi các thiết bị đang được quản lý. Chức năng kích hoạt thiết bị cho phép người dùng liên kết thiết bị mới với tài khoản. Chức năng chỉnh sửa thông tin thiết bị hỗ trợ cập nhật các thông tin liên quan đến thiết bị hoặc phương tiện. Chức năng xóa thiết bị được sử dụng khi người dùng không còn nhu cầu quản lý thiết bị đó trong hệ thống.
+
+Các use case con được biểu diễn dưới dạng các chức năng mở rộng của use case “Quản lý thiết bị cá nhân”, thể hiện rằng người dùng có thể lựa chọn thực hiện từng thao tác tùy theo nhu cầu trong quá trình quản lý thiết bị.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/UC_phan_ra_quan_ly_thiet_bi.png}
+    \caption{Biểu đồ Use Case Quản lý thiết bị cá nhân}
+    \label{fig:usecase-overview}
+\end{figure}
+
+\subsection{Biểu đồ use case phân rã Xem trạng thái thiết bị}
+\label{subsection:2.2.3}
+Biểu đồ use case phân rã nhóm chức năng “Xem trạng thái thiết bị” mô tả các thông tin mà người dùng có thể theo dõi đối với thiết bị chống trộm được gắn trên phương tiện. Trong nhóm chức năng này, tác nhân tham gia là Người dùng, thông qua ứng dụng di động để quan sát trạng thái hoạt động hiện tại của thiết bị và phương tiện.
+
+Use case “Xem trạng thái thiết bị” được phân rã thành các chức năng gồm xem trạng thái kết nối, xem trạng thái chống trộm, xem vị trí hiện tại và xem thông tin cảm biến. Chức năng xem trạng thái kết nối giúp người dùng biết thiết bị có đang kết nối với hệ thống hay không. Chức năng xem trạng thái chống trộm cho biết chế độ bảo vệ của phương tiện đang được bật hay tắt. Chức năng xem vị trí hiện tại hỗ trợ người dùng theo dõi vị trí gần nhất của xe. Chức năng xem thông tin cảm biến hiển thị các dữ liệu liên quan đến trạng thái phát hiện của thiết bị.
+
+Các use case con được biểu diễn dưới dạng các chức năng mở rộng của use case “Xem trạng thái thiết bị”, thể hiện rằng người dùng có thể theo dõi từng nhóm thông tin cụ thể tùy theo nhu cầu trong quá trình giám sát phương tiện.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/UC_phan_ra_xem_trang_thai_thiet_bi.png}
+    \caption{Biểu đồ Use Case Xem trạng thái thiết bị}
+    \label{fig:usecase-overview}
+\end{figure}
+
+\subsection{Biểu đồ use case phân rã Gửi dữ liệu cảm biến}
+\label{subsection:2.2.4}
+Biểu đồ use case phân rã nhóm chức năng “Gửi dữ liệu cảm biến” mô tả các loại dữ liệu chính mà thiết bị IoT gửi về hệ thống trong quá trình hoạt động. Tác nhân tham gia vào nhóm chức năng này là Device IoT, đại diện cho thiết bị phần cứng được gắn trên phương tiện và giao tiếp với hệ thống thông qua giao thức MQTT.
+
+Use case “Gửi dữ liệu cảm biến” được phân rã thành các chức năng gồm gửi dữ liệu rung động, gửi dữ liệu vị trí, gửi trạng thái thiết bị và gửi trạng thái nguồn. Dữ liệu rung động hỗ trợ hệ thống nhận biết các tác động bất thường lên phương tiện. Dữ liệu vị trí phục vụ việc cập nhật vị trí hiện tại của xe. Trạng thái thiết bị và trạng thái nguồn giúp hệ thống theo dõi tình trạng hoạt động của thiết bị trong quá trình vận hành.
+
+Các use case con được biểu diễn như các chức năng mở rộng của use case “Gửi dữ liệu cảm biến”, thể hiện rằng tùy theo trạng thái hoạt động và dữ liệu thu thập được, thiết bị có thể gửi các nhóm thông tin khác nhau về hệ thống.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/UC_phan_ra_gui_du_lieu_cam_bien.png}
+    \caption{Biểu đồ Use Case Gửi dữ liệu cảm biến}
+    \label{fig:usecase-overview}
+\end{figure}
+
+\subsection{Biểu đồ use case phân rã Quan lý tài khoản cá nhân}
+\label{subsection:2.2.5}
+
+Biểu đồ use case phân rã nhóm chức năng “Quản lý tài khoản cá nhân” mô tả các thao tác chính mà người dùng có thể thực hiện đối với tài khoản của mình trong hệ thống. Tác nhân tham gia vào nhóm chức năng này là Người dùng, thông qua ứng dụng di động để xem và cập nhật các thông tin cá nhân cần thiết.
+
+Use case “Quản lý tài khoản cá nhân” được phân rã thành ba chức năng chính gồm xem thông tin tài khoản, cập nhật thông tin cá nhân và đổi mật khẩu. Chức năng xem thông tin tài khoản cho phép người dùng kiểm tra các thông tin hiện có của tài khoản. Chức năng cập nhật thông tin cá nhân hỗ trợ người dùng thay đổi một số thông tin như tên hiển thị hoặc số điện thoại. Chức năng đổi mật khẩu giúp người dùng thay đổi thông tin xác thực nhằm đảm bảo an toàn cho tài khoản.
+
+Các use case con được biểu diễn dưới dạng các chức năng mở rộng của use case “Quản lý tài khoản cá nhân”, thể hiện rằng người dùng có thể lựa chọn thực hiện từng thao tác tùy theo nhu cầu trong quá trình sử dụng hệ thống.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/UC_phan_ra_quan_ly_tai_khoan_ca_nhan.png}
+    \caption{Biểu đồ Use Case Quản lý tài khoản cá nhân}
+    \label{fig:usecase-overview}
+\end{figure}
+
+\subsection{Quy trình nghiệp vụ Kích hoạt thiết bị}
+\label{subsection:2.2.6}
+Quy trình nghiệp vụ kích hoạt thiết bị mô tả các bước cần thực hiện để người dùng liên kết một thiết bị chống trộm với tài khoản cá nhân. Quy trình bắt đầu khi người dùng đăng nhập vào ứng dụng di động và chọn chức năng kích hoạt thiết bị. Sau đó, ứng dụng yêu cầu người dùng nhập các thông tin cần thiết gồm DeviceID, DeviceKey và thông tin phương tiện tương ứng.
+
+Sau khi người dùng gửi yêu cầu kích hoạt, hệ thống máy chủ tiếp nhận và kiểm tra tính hợp lệ của DeviceID và DeviceKey. Nếu thông tin thiết bị không hợp lệ, ứng dụng sẽ hiển thị thông báo lỗi để người dùng kiểm tra và nhập lại. Nếu thông tin hợp lệ, máy chủ tiếp tục kiểm tra trạng thái liên kết của thiết bị. Trong trường hợp thiết bị chưa được liên kết với tài khoản nào, hệ thống lưu thông tin phương tiện, liên kết thiết bị với tài khoản người dùng và cập nhật trạng thái thiết bị là đã kích hoạt.
+
+Khi quá trình kích hoạt hoàn tất, ứng dụng di động hiển thị thông báo kích hoạt thành công và người dùng có thể xem thiết bị trong danh sách quản lý. Trường hợp thiết bị đã được liên kết trước đó, hệ thống sẽ thông báo cho người dùng để tránh việc một thiết bị bị kích hoạt lại hoặc gắn với nhiều tài khoản không hợp lệ.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/AC_kich_hoat_thiet_bi.png}
+    \caption{Quy trình nghiệp vụ Kích hoạt thiết bị}
+    \label{fig:usecase-overview}
+\end{figure}
+
+\subsection{Quy trình nghiệp vụ Giám sát và cảnh báo trộm}
+\label{subsection:2.2.7}
+Quy trình nghiệp vụ giám sát và cảnh báo trộm mô tả quá trình hệ thống theo dõi trạng thái phương tiện và gửi cảnh báo đến người dùng khi phát hiện dấu hiệu bất thường. Quy trình bắt đầu khi người dùng bật chế độ chống trộm trên ứng dụng di động. Sau đó, ứng dụng gửi yêu cầu đến máy chủ để cập nhật trạng thái chống trộm của thiết bị tương ứng.
+
+Trong quá trình hoạt động, thiết bị IoT thu thập dữ liệu từ cảm biến và gửi dữ liệu về máy chủ thông qua giao thức MQTT. Sau khi tiếp nhận dữ liệu, máy chủ thực hiện xác thực thiết bị nhằm đảm bảo dữ liệu đến từ thiết bị hợp lệ. Nếu thiết bị không hợp lệ, dữ liệu sẽ bị từ chối. Nếu thiết bị hợp lệ, hệ thống lưu dữ liệu cảm biến, vị trí và kiểm tra trạng thái chống trộm hiện tại của thiết bị.
+
+Khi chế độ chống trộm đang được bật, máy chủ phân tích dữ liệu cảm biến để xác định xem phương tiện có xuất hiện dấu hiệu bất thường hay không. Nếu không phát hiện nguy cơ trộm, hệ thống chỉ cập nhật trạng thái thiết bị bình thường. Ngược lại, nếu phát hiện nguy cơ trộm, hệ thống tạo bản ghi cảnh báo, lưu lịch sử cảnh báo và gửi thông báo đến ứng dụng di động. Người dùng sau đó có thể mở ứng dụng để xem chi tiết cảnh báo, trạng thái thiết bị và vị trí hiện tại của xe.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/AC_Gui_du_lieu.png}
+    \caption{Quy trình nghiệp vụ Giám sát và cảnh báo trộm}
+    \label{fig:usecase-overview}
+\end{figure}
+
+\section{Đặc tả chức năng}
+\label{section:2.3}
+
+\subsection{Đặc tả use case Đăng nhập}
+Use case “Đăng nhập” cho phép người dùng truy cập vào hệ thống bằng tài khoản đã được đăng ký trước đó. Đây là chức năng xác thực cơ bản, đảm bảo chỉ những người dùng hợp lệ mới có thể sử dụng các chức năng quản lý thiết bị, xem trạng thái phương tiện, xem lịch sử dữ liệu và nhận cảnh báo từ hệ thống.
+
+\hfill
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{10cm}|}
+\hline
+\textbf{Mã UseCase} & UC01 \\
+\hline
+\textbf{Tên UseCase} & Đăng nhập \\
+\hline
+\textbf{Tác nhân} & Người dùng \\
+\hline
+\textbf{Mục đích sử dụng} & Xác thực tài khoản để cho phép người dùng truy cập vào hệ thống và sử dụng các chức năng quản lý, giám sát thiết bị. \\
+\hline
+\textbf{Sự kiện kích hoạt} & Người dùng chọn chức năng đăng nhập trên ứng dụng di động. \\
+\hline
+\textbf{Điều kiện tiên quyết} & Người dùng đã có tài khoản trong hệ thống và thiết bị di động có kết nối Internet. \\
+\hline
+\textbf{Luồng sự kiện chính (thành công)} &
+\begin{minipage}[t]{\linewidth}
+
+1. Người dùng mở ứng dụng di động. \\
+2. Hệ thống hiển thị giao diện đăng nhập. \\
+3. Người dùng nhập thông tin tài khoản và mật khẩu. \\
+4. Người dùng chọn chức năng đăng nhập. \\
+5. Hệ thống kiểm tra tính hợp lệ của thông tin đăng nhập. \\
+6. Hệ thống xác thực tài khoản người dùng. \\
+7. Hệ thống thông báo đăng nhập thành công và chuyển người dùng đến màn hình chính của ứng dụng.
+   \end{minipage} \\
+   \hline
+   \textbf{Luồng sự kiện thay thế} &
+   \begin{minipage}[t]{\linewidth}
+   3.1 Người dùng chưa nhập đầy đủ thông tin đăng nhập. Hệ thống hiển thị thông báo yêu cầu nhập đầy đủ thông tin. \\
+   5.1 Thông tin tài khoản hoặc mật khẩu không đúng. Hệ thống hiển thị thông báo đăng nhập thất bại. \\
+   5.2 Thiết bị di động không có kết nối Internet. Hệ thống hiển thị thông báo lỗi kết nối.
+   \end{minipage} \\
+   \hline
+   \textbf{Hậu điều kiện} & Người dùng đăng nhập thành công và có thể truy cập các chức năng của hệ thống theo tài khoản đã xác thực. \\
+   \hline
+   \caption{Đặc tả use case Đăng nhập}
+   \label{table:uc_dang_nhap}
+   \end{longtable}
+
+\subsection{Đặc tả use case Kích hoạt thiết bị}
+Use case “Kích hoạt thiết bị” cho phép người dùng liên kết một thiết bị chống trộm với tài khoản cá nhân. Sau khi kích hoạt thành công, thiết bị được đưa vào danh sách quản lý của người dùng và có thể được sử dụng để giám sát trạng thái phương tiện, gửi dữ liệu cảm biến và cảnh báo khi phát hiện dấu hiệu bất thường.
+\hfill
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{10cm}|}
+\hline
+\textbf{Mã UseCase} & UC02 \\
+\hline
+\textbf{Tên UseCase} & Kích hoạt thiết bị \\
+\hline
+\textbf{Tác nhân} & Người dùng \\
+\hline
+\textbf{Mục đích sử dụng} & Liên kết thiết bị IoT với tài khoản người dùng và phương tiện tương ứng. \\
+\hline
+\textbf{Sự kiện kích hoạt} & Người dùng chọn chức năng kích hoạt thiết bị. \\
+\hline
+\textbf{Điều kiện tiên quyết} & Người dùng đã đăng nhập và có DeviceID, DeviceKey của thiết bị. \\
+\hline
+\textbf{Luồng sự kiện chính (thành công)} &
+\begin{minipage}[t]{\linewidth}
+
+1. Người dùng chọn chức năng kích hoạt thiết bị. \\
+2. Hệ thống hiển thị giao diện nhập thông tin kích hoạt. \\
+3. Người dùng nhập DeviceID, DeviceKey và thông tin phương tiện. \\
+4. Hệ thống kiểm tra tính hợp lệ của DeviceID và DeviceKey. \\
+5. Hệ thống kiểm tra trạng thái liên kết của thiết bị. \\
+6. Hệ thống liên kết thiết bị với tài khoản người dùng. \\
+7. Hệ thống thông báo kích hoạt thiết bị thành công.
+   \end{minipage} \\
+   \hline
+   \textbf{Luồng sự kiện thay thế} &
+   \begin{minipage}[t]{\linewidth}
+   3.1 Người dùng nhập thiếu thông tin. Hệ thống yêu cầu nhập đầy đủ thông tin. \\
+   4.1 DeviceID hoặc DeviceKey không hợp lệ. Hệ thống thông báo kích hoạt thất bại. \\
+   5.1 Thiết bị đã được liên kết với tài khoản khác. Hệ thống thông báo thiết bị đã được kích hoạt trước đó.
+   \end{minipage} \\
+   \hline
+   \textbf{Hậu điều kiện} & Thiết bị được liên kết với tài khoản người dùng và xuất hiện trong danh sách thiết bị cá nhân. \\
+   \hline
+   \caption{Đặc tả use case Kích hoạt thiết bị}
+   \label{table:uc_kich_hoat_thiet_bi}
+   \end{longtable}
+
+\subsection{Đặc tả use case Xem trạng thái thiết bị}
+\label{subsection:2.3.3}
+
+Use case “Xem trạng thái thiết bị” cho phép người dùng theo dõi trạng thái hoạt động của thiết bị chống trộm, trạng thái chống trộm, vị trí hiện tại và một số thông tin cảm biến liên quan đến phương tiện.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{10cm}|}
+\hline
+\textbf{Mã UseCase} & UC03 \\
+\hline
+\textbf{Tên UseCase} & Xem trạng thái thiết bị \\
+\hline
+\textbf{Tác nhân} & Người dùng \\
+\hline
+\textbf{Mục đích sử dụng} & Cho phép người dùng theo dõi trạng thái hiện tại của thiết bị và phương tiện trên ứng dụng di động. \\
+\hline
+\textbf{Sự kiện kích hoạt} & Người dùng chọn một thiết bị trong danh sách thiết bị cá nhân để xem trạng thái. \\
+\hline
+\textbf{Điều kiện tiên quyết} & Người dùng đã đăng nhập và đã kích hoạt ít nhất một thiết bị trong hệ thống. \\
+\hline
+\textbf{Luồng sự kiện chính (thành công)} &
+\begin{minipage}[t]{\linewidth}
+
+1. Người dùng mở danh sách thiết bị cá nhân. \\
+2. Người dùng chọn thiết bị cần xem trạng thái. \\
+3. Hệ thống truy xuất thông tin trạng thái mới nhất của thiết bị. \\
+4. Hệ thống hiển thị trạng thái kết nối của thiết bị. \\
+5. Hệ thống hiển thị trạng thái chống trộm của phương tiện. \\
+6. Hệ thống hiển thị vị trí hiện tại hoặc vị trí gần nhất của thiết bị. \\
+7. Hệ thống hiển thị một số thông tin cảm biến liên quan.
+   \end{minipage} \\
+   \hline
+   \textbf{Luồng sự kiện thay thế} &
+   \begin{minipage}[t]{\linewidth}
+   1.1 Người dùng chưa có thiết bị nào được kích hoạt. Hệ thống hiển thị thông báo chưa có thiết bị. \\
+   3.1 Hệ thống không lấy được dữ liệu mới nhất. Hệ thống hiển thị dữ liệu gần nhất đã được lưu. \\
+   6.1 Thiết bị chưa gửi dữ liệu vị trí. Hệ thống hiển thị thông báo chưa có thông tin vị trí. \\
+   \end{minipage} \\
+   \hline
+   \textbf{Hậu điều kiện} & Người dùng xem được trạng thái hiện tại hoặc dữ liệu gần nhất của thiết bị trên ứng dụng. \\
+   \hline
+   \caption{Đặc tả use case Xem trạng thái thiết bị}
+   \label{table:uc_xem_trang_thai_thiet_bi}
+   \end{longtable}
+
+\subsection{Đặc tả use case Gửi dữ liệu cảm biến}
+\label{subsection:2.3.4}
+
+Use case “Gửi dữ liệu cảm biến” mô tả quá trình thiết bị IoT thu thập dữ liệu từ cảm biến và gửi dữ liệu về máy chủ để phục vụ việc giám sát trạng thái phương tiện.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{10cm}|}
+\hline
+\textbf{Mã UseCase} & UC04 \\
+\hline
+\textbf{Tên UseCase} & Gửi dữ liệu cảm biến \\
+\hline
+\textbf{Tác nhân} & Device IoT \\
+\hline
+\textbf{Mục đích sử dụng} & Gửi dữ liệu cảm biến, trạng thái thiết bị và vị trí phương tiện về máy chủ để hệ thống lưu trữ và xử lý. \\
+\hline
+\textbf{Sự kiện kích hoạt} & Thiết bị IoT thu thập được dữ liệu mới hoặc đến chu kỳ gửi dữ liệu định kỳ. \\
+\hline
+\textbf{Điều kiện tiên quyết} & Thiết bị đã được kích hoạt, có kết nối mạng và có thông tin xác thực hợp lệ. \\
+\hline
+\textbf{Luồng sự kiện chính (thành công)} &
+\begin{minipage}[t]{\linewidth}
+
+1. Device IoT thu thập dữ liệu từ cảm biến. \\
+2. Device IoT lấy thông tin vị trí và trạng thái hiện tại của thiết bị. \\
+3. Device IoT đóng gói dữ liệu cần gửi. \\
+4. Device IoT gửi dữ liệu về máy chủ thông qua MQTT. \\
+5. Hệ thống xác thực thiết bị gửi dữ liệu. \\
+6. Hệ thống tiếp nhận và lưu dữ liệu vào cơ sở dữ liệu. \\
+7. Hệ thống cập nhật trạng thái mới nhất của thiết bị.
+   \end{minipage} \\
+   \hline
+   \textbf{Luồng sự kiện thay thế} &
+   \begin{minipage}[t]{\linewidth}
+   4.1 Thiết bị mất kết nối mạng. Dữ liệu không được gửi lên máy chủ tại thời điểm đó. \\
+   5.1 Thông tin xác thực của thiết bị không hợp lệ. Hệ thống từ chối dữ liệu. \\
+   6.1 Dữ liệu gửi lên không đúng định dạng. Hệ thống bỏ qua dữ liệu và ghi nhận lỗi xử lý.
+   \end{minipage} \\
+   \hline
+   \textbf{Hậu điều kiện} & Dữ liệu cảm biến, vị trí và trạng thái thiết bị được lưu trữ trên hệ thống để phục vụ giám sát, hiển thị và phát hiện bất thường. \\
+   \hline
+   \caption{Đặc tả use case Gửi dữ liệu cảm biến}
+   \label{table:uc_gui_du_lieu_cam_bien}
+   \end{longtable}
+
+\subsection{Đặc tả use case Phát hiện nguy cơ trộm}
+\label{subsection:2.3.5}
+
+Use case “Phát hiện nguy cơ trộm” mô tả quá trình hệ thống xử lý dữ liệu từ thiết bị IoT để xác định các dấu hiệu bất thường liên quan đến phương tiện.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{10cm}|}
+\hline
+\textbf{Mã UseCase} & UC05 \\
+\hline
+\textbf{Tên UseCase} & Phát hiện nguy cơ trộm \\
+\hline
+\textbf{Tác nhân} & Device IoT \\
+\hline
+\textbf{Mục đích sử dụng} & Phân tích dữ liệu cảm biến và trạng thái phương tiện để phát hiện nguy cơ trộm hoặc các dấu hiệu bất thường. \\
+\hline
+\textbf{Sự kiện kích hoạt} & Hệ thống nhận được dữ liệu cảm biến mới từ thiết bị IoT. \\
+\hline
+\textbf{Điều kiện tiên quyết} & Thiết bị đã được kích hoạt, dữ liệu gửi lên hợp lệ và chế độ chống trộm của thiết bị đang được bật. \\
+\hline
+\textbf{Luồng sự kiện chính (thành công)} &
+\begin{minipage}[t]{\linewidth}
+
+1. Device IoT gửi dữ liệu cảm biến và trạng thái thiết bị về hệ thống. \\
+2. Hệ thống tiếp nhận và xác thực dữ liệu từ thiết bị. \\
+3. Hệ thống kiểm tra trạng thái chống trộm của thiết bị. \\
+4. Hệ thống phân tích dữ liệu cảm biến và vị trí phương tiện. \\
+5. Hệ thống xác định dữ liệu có dấu hiệu bất thường. \\
+6. Hệ thống tạo bản ghi cảnh báo trộm. \\
+7. Hệ thống chuyển thông tin cảnh báo đến chức năng gửi cảnh báo cho người dùng.
+   \end{minipage} \\
+   \hline
+   \textbf{Luồng sự kiện thay thế} &
+   \begin{minipage}[t]{\linewidth}
+   2.1 Dữ liệu gửi lên không hợp lệ. Hệ thống bỏ qua dữ liệu và không thực hiện phát hiện nguy cơ trộm. \\
+   3.1 Chế độ chống trộm đang tắt. Hệ thống chỉ lưu dữ liệu và cập nhật trạng thái thiết bị. \\
+   5.1 Dữ liệu không có dấu hiệu bất thường. Hệ thống cập nhật trạng thái thiết bị bình thường.
+   \end{minipage} \\
+   \hline
+   \textbf{Hậu điều kiện} & Nếu phát hiện nguy cơ trộm, hệ thống tạo cảnh báo và lưu lịch sử cảnh báo. Nếu không phát hiện bất thường, hệ thống chỉ cập nhật trạng thái thiết bị. \\
+   \hline
+   \caption{Đặc tả use case Phát hiện nguy cơ trộm}
+   \label{table:uc_phat_hien_nguy_co_trom}
+   \end{longtable}
+
+\subsection{Đặc tả use case Nhận cảnh báo trộm}
+\label{subsection:2.3.6}
+
+Use case “Nhận cảnh báo trộm” mô tả quá trình hệ thống gửi thông báo đến người dùng khi phát hiện phương tiện có dấu hiệu bất thường.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{10cm}|}
+\hline
+\textbf{Mã UseCase} & UC06 \\
+\hline
+\textbf{Tên UseCase} & Nhận cảnh báo trộm \\
+\hline
+\textbf{Tác nhân} & Người dùng \\
+\hline
+\textbf{Mục đích sử dụng} & Thông báo kịp thời cho người dùng khi hệ thống phát hiện nguy cơ trộm hoặc dấu hiệu bất thường từ phương tiện. \\
+\hline
+\textbf{Sự kiện kích hoạt} & Hệ thống phát hiện nguy cơ trộm từ dữ liệu do thiết bị IoT gửi lên. \\
+\hline
+\textbf{Điều kiện tiên quyết} & Người dùng đã đăng nhập, thiết bị đã được kích hoạt và ứng dụng đã được cấp quyền nhận thông báo. \\
+\hline
+\textbf{Luồng sự kiện chính (thành công)} &
+\begin{minipage}[t]{\linewidth}
+
+1. Hệ thống phát hiện nguy cơ trộm từ dữ liệu cảm biến. \\
+2. Hệ thống tạo nội dung cảnh báo. \\
+3. Hệ thống lưu thông tin cảnh báo vào lịch sử. \\
+4. Hệ thống gửi thông báo cảnh báo đến ứng dụng di động của người dùng. \\
+5. Ứng dụng hiển thị thông báo cảnh báo trộm. \\
+6. Người dùng mở thông báo để xem chi tiết cảnh báo. \\
+7. Hệ thống hiển thị thông tin cảnh báo, trạng thái thiết bị và vị trí phương tiện.
+   \end{minipage} \\
+   \hline
+   \textbf{Luồng sự kiện thay thế} &
+   \begin{minipage}[t]{\linewidth}
+   4.1 Ứng dụng chưa được cấp quyền nhận thông báo. Hệ thống vẫn lưu cảnh báo trong lịch sử nhưng người dùng không nhận được thông báo đẩy. \\
+   4.2 Thiết bị di động của người dùng không có kết nối Internet. Thông báo có thể được hiển thị khi thiết bị kết nối mạng trở lại. \\
+   6.1 Người dùng không mở thông báo. Cảnh báo vẫn được lưu trong lịch sử để người dùng xem lại sau.
+   \end{minipage} \\
+   \hline
+   \textbf{Hậu điều kiện} & Người dùng nhận được cảnh báo trộm hoặc có thể xem lại cảnh báo trong lịch sử cảnh báo của ứng dụng. \\
+   \hline
+   \caption{Đặc tả use case Nhận cảnh báo trộm}
+   \label{table:uc_nhan_canh_bao_trom}
+   \end{longtable}
+
+\section{Yêu cầu phi chức năng}
+\label{section:2.4}
+
+Bên cạnh các yêu cầu chức năng đã trình bày ở các phần trước, hệ thống chống trộm xe IoT cần đáp ứng một số yêu cầu phi chức năng nhằm đảm bảo khả năng hoạt động ổn định, an toàn và phù hợp với điều kiện sử dụng thực tế. Các yêu cầu này liên quan đến hiệu năng, độ tin cậy, bảo mật, tính dễ sử dụng, khả năng bảo trì và khả năng mở rộng của hệ thống.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.5cm}|>{\raggedright\arraybackslash}p{9.5cm}|}
+\hline
+\textbf{Nhóm yêu cầu} & \textbf{Mô tả} \\
+\hline
+\textbf{Hiệu năng} & Hệ thống cần tiếp nhận và xử lý dữ liệu từ thiết bị IoT trong thời gian ngắn. Khi phát hiện dấu hiệu bất thường, cảnh báo cần được gửi đến người dùng kịp thời để hỗ trợ xử lý tình huống. \\
+\hline
+\textbf{Độ tin cậy} & Hệ thống cần đảm bảo dữ liệu cảm biến, vị trí và cảnh báo được ghi nhận chính xác trong quá trình thiết bị hoạt động. Trong trường hợp mất kết nối tạm thời, hệ thống cần có khả năng xử lý phù hợp và cập nhật lại trạng thái khi kết nối được khôi phục. \\
+\hline
+\textbf{Bảo mật} & Người dùng cần đăng nhập trước khi sử dụng các chức năng quản lý và giám sát thiết bị. Thiết bị IoT cần được xác thực khi gửi dữ liệu lên hệ thống nhằm hạn chế việc dữ liệu giả mạo hoặc không hợp lệ được xử lý. \\
+\hline
+\textbf{Tính dễ sử dụng} & Giao diện ứng dụng di động cần được thiết kế đơn giản, dễ hiểu và phù hợp với người dùng phổ thông. Các chức năng quan trọng như xem trạng thái thiết bị, kích hoạt thiết bị và nhận cảnh báo cần được trình bày rõ ràng, dễ thao tác. \\
+\hline
+\textbf{Khả năng bảo trì} & Mã nguồn của hệ thống cần được tổ chức rõ ràng theo từng thành phần như ứng dụng di động, máy chủ và thiết bị IoT. Việc phân chia này giúp thuận tiện cho quá trình kiểm tra, sửa lỗi và phát triển thêm chức năng trong tương lai. \\
+\hline
+\textbf{Khả năng mở rộng} & Hệ thống cần có khả năng mở rộng để hỗ trợ nhiều người dùng và nhiều thiết bị hơn. Kiến trúc hệ thống cần cho phép bổ sung thêm các loại cảm biến, chức năng cảnh báo hoặc phương thức giám sát mới khi cần thiết. \\
+\hline
+\textbf{Yêu cầu kỹ thuật} & Hệ thống cần hỗ trợ giao tiếp giữa thiết bị IoT và máy chủ, lưu trữ dữ liệu thiết bị, dữ liệu cảm biến, vị trí và lịch sử cảnh báo. Ứng dụng di động cần kết nối được với máy chủ để hiển thị dữ liệu và nhận thông báo từ hệ thống. \\
+\hline
+\caption{Yêu cầu phi chức năng của hệ thống}
+\label{table:non_functional_requirements}
+\end{longtable}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

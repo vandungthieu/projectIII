@@ -1,0 +1,37 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Biểu đồ Use Case tổng quan của hệ thống}}{8}{figure.caption.10}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Biểu đồ Use Case Quản lý thiết bị cá nhân}}{9}{figure.caption.11}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Biểu đồ Use Case Xem trạng thái thiết bị}}{10}{figure.caption.12}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Biểu đồ Use Case Gửi dữ liệu cảm biến}}{11}{figure.caption.13}%
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Biểu đồ Use Case Quản lý tài khoản cá nhân}}{12}{figure.caption.14}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Quy trình nghiệp vụ Kích hoạt thiết bị}}{13}{figure.caption.15}%
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Quy trình nghiệp vụ Giám sát và cảnh báo trộm}}{14}{figure.caption.16}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Vi điều khiển Esp32}}{27}{figure.caption.17}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Module A7680C}}{28}{figure.caption.18}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Module NEO-6M}}{29}{figure.caption.19}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Biểu đồ gói tổng quan của hệ thống}}{32}{figure.caption.20}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Biểu đồ gói chi tiết của hệ thống}}{33}{figure.caption.21}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Thiết kế thanh điều hướng dưới của ứng dụng}}{37}{figure.caption.23}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Thiết kế giao diện màn hình trang chủ}}{38}{figure.caption.25}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Thiết kế giao diện màn hình chi tiết thiết bị}}{39}{figure.caption.27}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Thiết kế giao diện màn hình cảnh báo}}{40}{figure.caption.29}%
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Thiết kế lớp UserService}}{41}{figure.caption.30}%
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Thiết kế lớp DeviceService}}{42}{figure.caption.31}%
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Thiết kế lớp SensorDataService}}{43}{figure.caption.32}%
+\contentsline {figure}{\numberline {4.10}{\ignorespaces Thiết kế lớp MqttService}}{44}{figure.caption.33}%
+\contentsline {figure}{\numberline {4.11}{\ignorespaces Biểu đồ trình tự Gửi cảnh báo}}{45}{figure.caption.34}%
+\contentsline {figure}{\numberline {4.12}{\ignorespaces Biểu đồ thực thể liên kết}}{46}{figure.caption.35}%
+\contentsline {figure}{\numberline {4.13}{\ignorespaces Màn hình Trang chủ của ứng dụng}}{52}{figure.caption.39}%
+\contentsline {figure}{\numberline {4.14}{\ignorespaces Màn hình Cảnh báo của ứng dụng}}{53}{figure.caption.40}%
+\contentsline {figure}{\numberline {4.15}{\ignorespaces Màn hình Chi tiết cảnh báo của ứng dụng}}{54}{figure.caption.41}%
+\contentsline {figure}{\numberline {4.16}{\ignorespaces Màn hình Thiết bị của ứng dụng}}{55}{figure.caption.42}%
+\contentsline {figure}{\numberline {4.17}{\ignorespaces Màn hình Chi tiết thiết bị của ứng dụng}}{56}{figure.caption.43}%
+\contentsline {figure}{\numberline {4.18}{\ignorespaces Màn hình Kích hoạt thiết bị của ứng dụng}}{57}{figure.caption.44}%
+\contentsline {figure}{\numberline {4.19}{\ignorespaces Màn hình Tài khoản của ứng dụng}}{58}{figure.caption.45}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsfinish 
+\contentsfinish 

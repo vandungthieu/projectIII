@@ -532,80 +532,141 @@ class _LocationMapSection extends StatelessWidget {
   }
 }
 
-class _OpenStreetMapView extends StatelessWidget {
+class _OpenStreetMapView extends StatefulWidget {
   final List<LatLng> points;
   final VoidCallback? onTap;
 
   const _OpenStreetMapView({super.key, required this.points, this.onTap});
 
   @override
+  State<_OpenStreetMapView> createState() => _OpenStreetMapViewState();
+}
+
+class _OpenStreetMapViewState extends State<_OpenStreetMapView> {
+  final MapController _mapController = MapController();
+
+  @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      options: MapOptions(
-        initialCenter: points.last,
-        initialZoom: 16,
-        initialCameraFit: points.length > 1
-            ? CameraFit.coordinates(
-                coordinates: points,
-                padding: const EdgeInsets.all(36),
-                maxZoom: 17,
-              )
-            : null,
-        onTap: onTap == null ? null : (tapPosition, point) => onTap!(),
-        interactionOptions: const InteractionOptions(
-          flags:
-              InteractiveFlag.drag |
-              InteractiveFlag.pinchZoom |
-              InteractiveFlag.doubleTapZoom,
-        ),
-      ),
+    return Stack(
       children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'mobile_project',
-        ),
-        if (points.length > 1)
-          PolylineLayer(
-            polylines: [
-              Polyline(
-                points: points,
-                strokeWidth: 5,
-                color: AppColors.primary,
-                borderStrokeWidth: 2,
-                borderColor: Colors.white,
-              ),
-            ],
-          ),
-        MarkerLayer(
-          markers: [
-            Marker(
-              point: points.first,
-              width: 38,
-              height: 38,
-              child: const _RouteMarker(
-                icon: Icons.trip_origin,
-                color: AppColors.success,
-                tooltip: 'Điểm bắt đầu',
-              ),
+        FlutterMap(
+          mapController: _mapController,
+          options: MapOptions(
+            initialCenter: widget.points.last,
+            initialZoom: 16,
+            minZoom: 3,
+            maxZoom: 19,
+            initialCameraFit: widget.points.length > 1
+                ? CameraFit.coordinates(
+                    coordinates: widget.points,
+                    padding: const EdgeInsets.all(36),
+                    maxZoom: 17,
+                  )
+                : null,
+            onTap: widget.onTap == null
+                ? null
+                : (tapPosition, point) => widget.onTap!(),
+            interactionOptions: const InteractionOptions(
+              flags:
+                  InteractiveFlag.drag |
+                  InteractiveFlag.pinchZoom |
+                  InteractiveFlag.doubleTapZoom,
             ),
-            if (points.length > 1)
-              Marker(
-                point: points.last,
-                width: 42,
-                height: 42,
-                child: const _RouteMarker(
-                  icon: Icons.location_on,
-                  color: AppColors.danger,
-                  tooltip: 'Vị trí cuối',
-                ),
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'mobile_project',
+            ),
+            if (widget.points.length > 1)
+              PolylineLayer(
+                polylines: [
+                  Polyline(
+                    points: widget.points,
+                    strokeWidth: 5,
+                    color: AppColors.primary,
+                    borderStrokeWidth: 2,
+                    borderColor: Colors.white,
+                  ),
+                ],
               ),
+            MarkerLayer(
+              markers: [
+                Marker(
+                  point: widget.points.first,
+                  width: 38,
+                  height: 38,
+                  child: const _RouteMarker(
+                    icon: Icons.trip_origin,
+                    color: AppColors.success,
+                    tooltip: 'Điểm bắt đầu',
+                  ),
+                ),
+                if (widget.points.length > 1)
+                  Marker(
+                    point: widget.points.last,
+                    width: 42,
+                    height: 42,
+                    child: const _RouteMarker(
+                      icon: Icons.location_on,
+                      color: AppColors.danger,
+                      tooltip: 'Vị trí cuối',
+                    ),
+                  ),
+              ],
+            ),
+            RichAttributionWidget(
+              attributions: [
+                TextSourceAttribution('OpenStreetMap contributors'),
+              ],
+            ),
           ],
         ),
-        RichAttributionWidget(
-          attributions: [TextSourceAttribution('OpenStreetMap contributors')],
+        Positioned(
+          top: 10,
+          left: 10,
+          child: Material(
+            color: Theme.of(context).cardColor.withValues(alpha: 0.94),
+            borderRadius: BorderRadius.circular(8),
+            elevation: 2,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  tooltip: 'Phóng to',
+                  onPressed: () => _changeZoom(1),
+                  icon: const Icon(Icons.add),
+                ),
+                SizedBox(
+                  width: 32,
+                  child: Divider(
+                    height: 1,
+                    color: Theme.of(context).dividerColor,
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Thu nhỏ',
+                  onPressed: () => _changeZoom(-1),
+                  icon: const Icon(Icons.remove),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
+  }
+
+  void _changeZoom(double delta) {
+    final camera = _mapController.camera;
+    final nextZoom = (camera.zoom + delta).clamp(3.0, 19.0).toDouble();
+    _mapController.move(camera.center, nextZoom);
+  }
+
+  @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
   }
 }
 

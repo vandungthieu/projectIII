@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:mobile_project/controller/alert_controller.dart';
+import 'package:mobile_project/controller/device_controller.dart';
 import 'package:mobile_project/controller/sensorData_controller.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:logger/logger.dart';
@@ -38,6 +39,10 @@ class SocketService {
     // Nhận cảnh báo mới
     socket!.on('alert', (alertJson) {
       logger.i(" NEW ALERT: $alertJson");
+
+      if (Get.isRegistered<DeviceController>()) {
+        Get.find<DeviceController>().updateStatusFromRealtime(alertJson);
+      }
 
       if (Get.isRegistered<AlertController>()) {
         Get.find<AlertController>().addAlertFromSocket(alertJson);

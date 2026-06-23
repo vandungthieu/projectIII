@@ -49,8 +49,8 @@ class NotificationService {
 
     final androidDetails = AndroidNotificationDetails(
       _securityChannelId,
-      'Security alerts',
-      channelDescription: 'Vehicle anti-theft and stolen alerts',
+      'Cảnh báo an ninh',
+      channelDescription: 'Cảnh báo bảo vệ và chống trộm xe',
       importance: Importance.max,
       priority: critical ? Priority.max : Priority.high,
       category: AndroidNotificationCategory.alarm,
@@ -87,8 +87,8 @@ class NotificationService {
 
     final androidDetails = AndroidNotificationDetails(
       _deviceChannelId,
-      'Device actions',
-      channelDescription: 'Device control status notifications',
+      'Điều khiển thiết bị',
+      channelDescription: 'Thông báo trạng thái điều khiển thiết bị',
       importance: Importance.high,
       priority: Priority.high,
       category: AndroidNotificationCategory.status,
@@ -125,8 +125,8 @@ class NotificationService {
 
     const securityChannel = AndroidNotificationChannel(
       _securityChannelId,
-      'Security alerts',
-      description: 'Vehicle anti-theft and stolen alerts',
+      'Cảnh báo an ninh',
+      description: 'Cảnh báo bảo vệ và chống trộm xe',
       importance: Importance.max,
       playSound: true,
       enableVibration: true,
@@ -134,8 +134,8 @@ class NotificationService {
 
     const deviceChannel = AndroidNotificationChannel(
       _deviceChannelId,
-      'Device actions',
-      description: 'Device control status notifications',
+      'Điều khiển thiết bị',
+      description: 'Thông báo trạng thái điều khiển thiết bị',
       importance: Importance.high,
       playSound: true,
       enableVibration: true,

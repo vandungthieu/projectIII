@@ -175,12 +175,12 @@ export class DeviceService{
 
     // 1. Sai deviceId hoặc deviceKey → 400 BadRequest
     if (!device || device.deviceKey !== deviceKey) {
-        throw new BadRequestException('Device ID or Device Key is incorrect');
+        throw new BadRequestException('Mã thiết bị hoặc khóa thiết bị không chính xác');
     }
 
     // 2. Device đã được kích hoạt → 409 Conflict
     if (device.userId) {
-        throw new ConflictException('This device is already activated');
+        throw new ConflictException('Thiết bị này đã được kích hoạt');
     }
 
     // 3. Cập nhật + kích hoạt
@@ -196,7 +196,7 @@ export class DeviceService{
     // 4. Trả kết quả chuẩn
     return {
         success: true,
-        message: 'Device activated successfully',
+        message: 'Kích hoạt thiết bị thành công',
         deviceId,
     };
 }

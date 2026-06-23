@@ -209,7 +209,7 @@ class AlertController extends GetxController {
 
       await _notificationService.showSecurityAlert(
         id: alertModel.id,
-        title: isCritical ? 'Canh bao khan cap' : 'Canh bao moi',
+        title: isCritical ? 'Cảnh báo khẩn cấp' : 'Cảnh báo mới',
         body: '$deviceName: ${alertModel.message}',
         critical: isCritical,
         payload: 'alert:${alertModel.id}',

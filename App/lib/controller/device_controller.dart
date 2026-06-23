@@ -113,8 +113,8 @@ class DeviceController extends GetxController {
       if (turnOn) {
         await _notificationService.showDeviceAction(
           id: device.id,
-          title: 'Da bat coi bao dong',
-          body: 'Thiet bi ${device.deviceId} dang keu bao dong',
+          title: 'Đã bật còi báo động',
+          body: 'Thiết bị ${device.deviceId} đang phát còi báo động',
           payload: 'device:${device.id}:buzzer_on',
         );
       }
@@ -217,6 +217,35 @@ class DeviceController extends GetxController {
     _applyFilters();
   }
 
+  /// Đồng bộ trạng thái thiết bị từ cảnh báo Socket.IO hoặc dữ liệu FCM.
+  void updateStatusFromRealtime(dynamic data) {
+    if (data is! Map) return;
+
+    final rawDeviceId = data['deviceId'];
+    final deviceId = rawDeviceId is int
+        ? rawDeviceId
+        : int.tryParse(rawDeviceId?.toString() ?? '');
+    final status = switch (data['vehicleStatus']?.toString().toLowerCase()) {
+      'parked' => VehicleStatus.parked,
+      'moving' => VehicleStatus.moving,
+      'stolen' => VehicleStatus.stolen,
+      _ => null,
+    };
+
+    if (deviceId == null || status == null) return;
+
+    final index = devices.indexWhere((device) => device.id == deviceId);
+    if (index < 0) return;
+
+    final device = devices[index];
+    device.vehicleStatus = status;
+
+    final createdAt = DateTime.tryParse(data['createdAt']?.toString() ?? '');
+    if (createdAt != null) device.lastSeen = createdAt;
+
+    _refreshDeviceCollections();
+  }
+
   // active device
   Future<void> activateDevice(String deviceId, String deviceKey) async {
     try {
@@ -230,8 +259,8 @@ class DeviceController extends GetxController {
 
       // Nếu đến đây tức là thành công
       Get.snackbar(
-        "Success",
-        "Device activated successfully",
+        "Thành công",
+        "Thiết bị đã được kích hoạt",
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.green,
         colorText: Colors.white,
@@ -245,7 +274,7 @@ class DeviceController extends GetxController {
     } catch (e) {
       // API trả lỗi 400 hoặc 409
       Get.snackbar(
-        "Error",
+        "Kích hoạt thất bại",
         e.toString().replaceAll("Exception: ", ""),
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,

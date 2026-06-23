@@ -1,0 +1,76 @@
+\documentclass[../DoAn.tex]{subfiles}
+\begin{document}
+\section{Kết luận}
+
+Đề tài đã xây dựng được nguyên mẫu hệ thống giám sát và cảnh báo chống trộm
+xe máy dựa trên nền tảng Internet vạn vật. Hệ thống gồm thiết bị định vị sử
+dụng ESP32 và GPS, máy chủ NestJS, cơ sở dữ liệu PostgreSQL và ứng dụng di
+động Flutter. Dữ liệu vị trí và tốc độ được truyền qua giao thức MQTT, lưu
+trữ tại máy chủ và cập nhật tới ứng dụng theo thời gian thực.
+
+Hệ thống cũng triển khai thuật toán phát hiện di chuyển bất thường khi xe
+đang ở chế độ bảo vệ. Thuật toán kết hợp ngưỡng tốc độ, khoảng cách xe rời
+khỏi vị trí đỗ và số mẫu bất thường liên tiếp. Việc kết hợp nhiều điều kiện
+giúp giảm cảnh báo sai do nhiễu hoặc sai số tức thời của tín hiệu GPS, đồng
+thời cho phép phân loại mức độ cảnh báo và chuyển trạng thái xe sang nguy cơ
+bị trộm khi có đủ bằng chứng.
+
+\section{So sánh với các sản phẩm trên thị trường}
+
+Để đánh giá khách quan kết quả của đề tài, sản phẩm được so sánh với Viettel
+Smart Motor và Apple AirTag. Smart Motor đại diện cho nhóm thiết bị giám sát,
+chống trộm xe máy chuyên dụng; AirTag đại diện cho nhóm thiết bị theo dõi vật
+dụng phổ thông. Thông tin được đối chiếu từ trang giới thiệu chính thức của Viettel Smart Motor là sản phẩm có mức độ tương đồng cao nhất với đề tài.
+Hai hệ thống đều hỗ trợ định vị GPS, giám sát hành trình, cảnh báo chống trộm
+và thao tác từ xa. Smart Motor có ưu thế về kết nối mạng di động, chức năng
+tắt máy từ xa, độ hoàn thiện phần cứng và dịch vụ hỗ trợ thương mại. Ngược
+lại, hệ thống của đề tài có kiến trúc mở, cho phép chủ động điều chỉnh thuật
+toán phát hiện bất thường, ngưỡng cảnh báo và cách thức xử lý dữ liệu.
+
+AirTag có ưu điểm về kích thước nhỏ, thời lượng pin dài và khả năng chống
+nước. Tuy nhiên, AirTag không phải thiết bị GPS độc lập mà sử dụng tín hiệu
+Bluetooth và các thiết bị trong mạng Find My để cập nhật vị trí. Sản phẩm
+không cung cấp tốc độ, lịch sử hành trình liên tục, trạng thái phương tiện
+hoặc khả năng điều khiển xe. Vì vậy, AirTag phù hợp với vai trò thiết bị theo
+dõi bổ trợ hơn là một giải pháp chống trộm xe máy chuyên dụng.
+
+Kết quả so sánh cho thấy sản phẩm của đề tài đã đáp ứng được phần lớn chức
+năng cốt lõi của một hệ thống giám sát xe máy. Điểm khác biệt chính là cơ chế
+phát hiện bất thường kết hợp tốc độ, độ dịch chuyển và số lần vi phạm liên
+tiếp, thay vì chỉ hiển thị vị trí hoặc cảnh báo dựa trên một sự kiện đơn lẻ.
+Tuy nhiên, xét về khả năng triển khai thực tế, nguyên mẫu vẫn còn khoảng cách
+so với sản phẩm thương mại về kết nối diện rộng, độ bền phần cứng và các
+chứng nhận an toàn.
+
+\section{Bài học kinh nghiệm }
+
+Bên cạnh các kết quả kỹ thuật đạt được, quá trình thực hiện đồ án cũng đem lại cho em nhiều bài học có giá trị. Trước hết, em nhận thấy rằng việc xây dựng một hệ thống hoàn chỉnh không chỉ dừng lại ở lập trình từng chức năng riêng lẻ, mà còn đòi hỏi khả năng phân tích yêu cầu, thiết kế kiến trúc, tổ chức mã nguồn, kiểm thử và xử lý các tình huống phát sinh trong quá trình triển khai. Đây là những kinh nghiệm quan trọng giúp em có cái nhìn thực tế hơn về quy trình phát triển một sản phẩm phần mềm.
+
+Trong quá trình thực hiện, em cũng học được cách kết nối kiến thức đã học ở trường với các công nghệ đang được sử dụng trong thực tế. Những kiến thức về lập trình, cơ sở dữ liệu, mạng máy tính, hệ thống nhúng và phát triển ứng dụng di động đã được vận dụng trực tiếp vào đồ án. Nhờ đó, em hiểu rõ hơn vai trò của từng mảng kiến thức và cách chúng phối hợp với nhau để giải quyết một bài toán cụ thể.
+
+Đồ án cũng giúp em rèn luyện khả năng tự học và giải quyết vấn đề. Trong quá trình phát triển hệ thống, em gặp nhiều khó khăn liên quan đến giao tiếp giữa thiết bị IoT và máy chủ, xử lý dữ liệu cảm biến, gửi thông báo đến ứng dụng di động và kiểm thử các trường hợp lỗi. Việc từng bước tìm hiểu nguyên nhân, thử nghiệm giải pháp và điều chỉnh thiết kế giúp em nâng cao khả năng phân tích, kiên trì xử lý vấn đề và làm việc có hệ thống hơn.
+
+Ngoài ra, quá trình thực hiện đồ án giúp em nhận thức rõ hơn tầm quan trọng của việc viết tài liệu, trình bày ý tưởng và tổ chức công việc. Một hệ thống kỹ thuật dù hoạt động được vẫn cần được mô tả rõ ràng, có căn cứ thiết kế, có kiểm thử và có đánh giá kết quả. Đây là bài học quan trọng đối với em trong quá trình học tập cũng như trong công việc sau này.
+
+
+\section{Hạn chế}
+
+Bên cạnh các kết quả đã đạt được, đề tài vẫn tồn tại một số hạn chế. Mẫu thử
+nghiệm hiện tại sử dụng 4G nên mất phí duy trì hàng tháng; chưa có kết nối di động độc lập và dịch vụ gia hạn gói cước mạng. Phần cứng chưa được đóng gói tinh giản, trong vỏ chống nước, chống bụi và chưa
+được đánh giá độ bền trong điều kiện rung, nhiệt độ cao hoặc môi trường ngoài
+trời. Hệ thống mới điều khiển còi và chưa hỗ trợ ngắt động cơ an toàn. Các
+ngưỡng phát hiện bất thường hiện được cấu hình cố định, chưa tự thích nghi với
+từng loại xe và thói quen sử dụng. Quy mô thử nghiệm còn nhỏ nên chưa phản ánh
+đầy đủ độ trễ, độ ổn định và tỷ lệ cảnh báo sai khi có nhiều thiết bị hoạt
+động đồng thời.
+
+\section{Hướng phát triển}
+
+Trong thời gian tới, em có thể tiếp tục phát triển và hoàn thiện hệ thống theo nhiều hướng khác nhau. Trước hết, hệ thống có thể bổ sung chức năng quản lý và gia hạn thuê bao SIM hằng tháng để đảm bảo thiết bị luôn duy trì kết nối mạng và gửi dữ liệu ổn định. Bên cạnh đó, phần cứng của thiết bị cần được cải tiến bằng cách bổ sung pin dự phòng, cảm biến rung, cảm biến phát hiện tháo thiết bị và vỏ bảo vệ đạt chuẩn chống nước, chống bụi. Những cải tiến này giúp thiết bị hoạt động ổn định hơn trong điều kiện thực tế và hạn chế rủi ro khi bị tác động vật lý từ bên ngoài.
+
+Về mặt chức năng, hệ thống có thể được mở rộng với các cơ chế cảnh báo nâng cao như thiết lập vùng an toàn, cảnh báo mất kết nối, cảnh báo nguồn điện và chức năng ngắt động cơ theo cơ chế bảo đảm an toàn. Ngoài ra, hệ thống cũng có thể cho phép người dùng cấu hình các ngưỡng tốc độ, khoảng cách và độ nhạy cảnh báo riêng cho từng phương tiện. Việc cá nhân hóa các tham số này sẽ giúp hệ thống phù hợp hơn với từng loại xe, từng nhu cầu sử dụng và từng điều kiện vận hành khác nhau.
+
+Bên cạnh các cải tiến về chức năng, hướng phát triển tiếp theo là nghiên cứu ứng dụng học máy hoặc các mô hình phân tích chuỗi thời gian để nhận diện hành vi di chuyển bất thường chính xác hơn. Thay vì chỉ dựa trên các ngưỡng cố định, hệ thống có thể học từ dữ liệu sử dụng thực tế để giảm cảnh báo sai và nâng cao độ tin cậy của quá trình phát hiện nguy cơ. Đồng thời, bảo mật hệ thống cũng cần được tăng cường thông qua việc sử dụng chứng thư TLS hợp lệ, quản lý khóa bí mật an toàn, giới hạn quyền truy cập MQTT và mã hóa các dữ liệu nhạy cảm.
+
+Cuối cùng, hệ thống cần được thử nghiệm trong thời gian dài hơn với nhiều thiết bị, nhiều người dùng và trong nhiều điều kiện địa hình, môi trường mạng khác nhau. Quá trình thử nghiệm mở rộng sẽ giúp đánh giá chính xác hơn độ ổn định, độ trễ, độ chính xác của cảnh báo và khả năng mở rộng của hệ thống khi triển khai trong thực tế.
+\end{document}

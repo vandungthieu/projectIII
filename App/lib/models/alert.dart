@@ -43,7 +43,7 @@ class Alert {
       deviceId: json['deviceId'] as int, // ✅ luôn int
       deviceCode: json['deviceCode'] as String, // ✅ dùng để hiển thị
       userId: json['userId'] as int,
-      message: json['message'] as String,
+      message: _localizeLegacyMessage(json['message'] as String),
       lat: latitude,
       lng: longitude,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -68,6 +68,36 @@ class Alert {
     if (value is num) return value.toDouble();
     if (value is String) return double.tryParse(value);
     return null;
+  }
+
+  static String _localizeLegacyMessage(String message) {
+    if (!message.startsWith('Suspicious vehicle behavior:') &&
+        !message.startsWith('Vehicle is moving abnormally')) {
+      return message;
+    }
+
+    final speed = RegExp(
+      r'speed ([\d.]+) km/h over threshold',
+    ).firstMatch(message)?.group(1);
+    final distance = RegExp(
+      r'moved ([\d.]+) m away from parked location',
+    ).firstMatch(message)?.group(1);
+    final fallbackSpeed = RegExp(
+      r'abnormally at ([\d.]+) km/h',
+    ).firstMatch(message)?.group(1);
+
+    final parts = <String>[
+      if (speed != null) 'tốc độ $speed km/h vượt ngưỡng an toàn',
+      if (distance != null) 'xe đã di chuyển $distance m khỏi vị trí bảo vệ',
+    ];
+
+    if (parts.isNotEmpty) {
+      return 'Phát hiện xe di chuyển bất thường: ${parts.join(' và ')}.';
+    }
+    if (fallbackSpeed != null) {
+      return 'Xe đang di chuyển bất thường với tốc độ $fallbackSpeed km/h!';
+    }
+    return message;
   }
 
   @override

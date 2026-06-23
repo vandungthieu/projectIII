@@ -29,6 +29,7 @@ void main() async {
   Get.put(DeviceController(), permanent: true);
   Get.put(AlertController());
   Get.put(SensorDataController(), permanent: true);
+  FcmService.instance.processPendingMessage();
 
   timeago.setLocaleMessages('vi', timeago.ViMessages());
   runApp(const MyApp());

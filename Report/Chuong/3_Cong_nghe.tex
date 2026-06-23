@@ -1,0 +1,159 @@
+\documentclass[../DoAn.tex]{subfiles}
+\begin{document}
+
+
+Chương 2 đã trình bày quá trình khảo sát hiện trạng, phân tích yêu cầu và đặc tả các chức năng chính của hệ thống chống trộm xe ứng dụng công nghệ IoT. Từ các yêu cầu đã xác định, hệ thống cần có khả năng thu thập dữ liệu từ thiết bị gắn trên phương tiện, truyền dữ liệu về máy chủ, lưu trữ và xử lý dữ liệu, đồng thời cung cấp giao diện ứng dụng di động để người dùng giám sát trạng thái thiết bị và nhận cảnh báo.
+
+Chương này trình bày các nền tảng lý thuyết và công nghệ được sử dụng để xây dựng hệ thống. Các công nghệ chính bao gồm NestJS cho phía máy chủ, PostgreSQL cho cơ sở dữ liệu, Flutter và ngôn ngữ Dart cho ứng dụng di động, ESP32 cho thiết bị điều khiển trung tâm, module A7680C cho kết nối mạng di động và module GPS NEO-6M cho chức năng định vị. Đối với từng công nghệ, chương trình bày vai trò trong hệ thống, lý do lựa chọn và mối liên hệ với các yêu cầu đã phân tích ở chương trước.
+
+\section{Kiến trúc công nghệ tổng thể}
+
+Hệ thống trong đồ án được xây dựng theo mô hình gồm ba nhóm thành phần chính: thiết bị IoT gắn trên phương tiện, hệ thống máy chủ và ứng dụng di động. Thiết bị IoT có nhiệm vụ thu thập dữ liệu cảm biến, dữ liệu vị trí và trạng thái hoạt động của phương tiện. Các dữ liệu này được truyền về máy chủ để xử lý, lưu trữ và cung cấp cho ứng dụng di động. Ứng dụng di động đóng vai trò giao diện tương tác giữa người dùng và hệ thống, cho phép người dùng quản lý thiết bị, xem trạng thái phương tiện, theo dõi vị trí và nhận cảnh báo khi có dấu hiệu bất thường.
+
+Về phía thiết bị, ESP32 được sử dụng làm vi điều khiển trung tâm để điều khiển các module phần cứng và xử lý dữ liệu ban đầu. Module GPS NEO-6M được dùng để thu thập thông tin vị trí của phương tiện. Module A7680C được sử dụng để hỗ trợ kết nối mạng di động, giúp thiết bị có thể truyền dữ liệu về hệ thống trong điều kiện không phụ thuộc vào mạng WiFi. Về phía máy chủ, NestJS được lựa chọn để xây dựng các API, xử lý dữ liệu từ thiết bị và phục vụ ứng dụng di động. PostgreSQL được sử dụng để lưu trữ dữ liệu người dùng, thiết bị, dữ liệu cảm biến, vị trí và lịch sử cảnh báo. Ứng dụng di động được phát triển bằng Flutter và Dart nhằm hỗ trợ triển khai giao diện người dùng trên thiết bị di động.
+
+\section{Công nghệ xây dựng khối máy chủ}
+\label{section:3.server}
+
+Khối máy chủ là thành phần trung gian giữa thiết bị IoT, ứng dụng di động và cơ sở dữ liệu. Trong hệ thống chống trộm xe IoT, khối máy chủ có nhiệm vụ cung cấp các API cho ứng dụng di động, tiếp nhận dữ liệu từ thiết bị, xử lý dữ liệu cảm biến, quản lý thông tin người dùng, quản lý thiết bị và hỗ trợ gửi cảnh báo khi phát hiện dấu hiệu bất thường. Để xây dựng khối này, đồ án sử dụng NestJS làm framework phát triển phía server và PostgreSQL làm hệ quản trị cơ sở dữ liệu.
+
+\subsection{NestJS}
+\label{subsection:3.nestjs}
+
+\subsubsection{Giới thiệu công nghệ}
+
+NestJS là một framework dùng để xây dựng ứng dụng phía máy chủ trên nền tảng Node.js. Framework này sử dụng TypeScript và hỗ trợ cách tổ chức mã nguồn theo module, controller, service và provider. Cách tổ chức này giúp tách biệt rõ vai trò giữa các thành phần xử lý yêu cầu, xử lý nghiệp vụ và truy cập dữ liệu.
+
+\subsubsection{Ứng dụng trong đồ án}
+
+Trong đồ án, NestJS được sử dụng để xây dựng server trung tâm của hệ thống chống trộm xe IoT. Server có nhiệm vụ xử lý các yêu cầu từ ứng dụng di động như đăng ký, đăng nhập, quản lý tài khoản, kích hoạt thiết bị, xem trạng thái thiết bị và xem lịch sử dữ liệu. Bên cạnh đó, server cũng tiếp nhận dữ liệu do thiết bị IoT gửi lên, kiểm tra tính hợp lệ của thiết bị, lưu dữ liệu vào cơ sở dữ liệu và xử lý các điều kiện phát sinh cảnh báo.
+
+NestJS được lựa chọn vì có cấu trúc rõ ràng, phù hợp với hệ thống gồm nhiều nhóm chức năng khác nhau. Các chức năng của hệ thống có thể được tách thành các module riêng như module xác thực, module người dùng, module thiết bị, module dữ liệu cảm biến và module cảnh báo. Việc tổ chức mã nguồn theo module giúp quá trình phát triển, kiểm thử, bảo trì và mở rộng hệ thống thuận lợi hơn. So với việc sử dụng trực tiếp Express.js, NestJS cung cấp sẵn cấu trúc phát triển chặt chẽ hơn, phù hợp với yêu cầu xây dựng server có nhiều thành phần trong đồ án.
+
+\subsection{PostgreSQL}
+\label{subsection:3.postgresql}
+
+\subsubsection{Giới thiệu công nghệ}
+
+PostgreSQL là một hệ quản trị cơ sở dữ liệu quan hệ mã nguồn mở. Hệ quản trị này hỗ trợ lưu trữ dữ liệu dưới dạng bảng, thiết lập quan hệ giữa các bảng và truy vấn dữ liệu bằng ngôn ngữ SQL. PostgreSQL phù hợp với các hệ thống cần lưu trữ dữ liệu có cấu trúc và yêu cầu tính nhất quán trong quá trình xử lý.
+
+\subsubsection{Ứng dụng trong đồ án}
+
+Trong đồ án, PostgreSQL được sử dụng để lưu trữ dữ liệu của hệ thống, bao gồm thông tin người dùng, thông tin thiết bị, thông tin phương tiện, dữ liệu cảm biến, dữ liệu vị trí và lịch sử cảnh báo. Các dữ liệu này được server truy xuất và cập nhật trong quá trình người dùng sử dụng ứng dụng hoặc khi thiết bị IoT gửi dữ liệu về hệ thống.
+
+PostgreSQL được lựa chọn vì dữ liệu trong hệ thống có quan hệ rõ ràng giữa các thực thể. Ví dụ, một người dùng có thể quản lý nhiều thiết bị, mỗi thiết bị gắn với một phương tiện và có nhiều bản ghi dữ liệu cảm biến hoặc cảnh báo. Việc sử dụng cơ sở dữ liệu quan hệ giúp tổ chức dữ liệu chặt chẽ, dễ truy vấn và đảm bảo tính toàn vẹn dữ liệu. So với các cơ sở dữ liệu NoSQL, PostgreSQL phù hợp hơn với phạm vi đồ án do hệ thống cần quản lý dữ liệu có cấu trúc và thường xuyên truy vấn theo người dùng, thiết bị hoặc thời gian.
+
+\section{Công nghệ xây dựng ứng dụng di động}
+\label{section:3.mobile}
+
+Ứng dụng di động là thành phần giao tiếp trực tiếp với người dùng trong hệ thống chống trộm xe IoT. Thông qua ứng dụng, người dùng có thể đăng ký, đăng nhập, quản lý tài khoản, kích hoạt thiết bị, theo dõi trạng thái phương tiện, xem vị trí xe, xem lịch sử dữ liệu và nhận cảnh báo khi hệ thống phát hiện dấu hiệu bất thường. Trong đồ án, ứng dụng di động được xây dựng bằng Flutter và ngôn ngữ lập trình Dart.
+
+\subsection{Flutter}
+\label{subsection:3.flutter}
+
+\subsubsection{Giới thiệu công nghệ}
+
+Flutter là một bộ công cụ phát triển giao diện người dùng do Google phát triển, cho phép xây dựng ứng dụng đa nền tảng từ một mã nguồn chung. Flutter hỗ trợ phát triển ứng dụng cho nhiều môi trường như Android, iOS, Web và Desktop. Đặc điểm nổi bật của Flutter là hệ thống giao diện được xây dựng dựa trên các widget, giúp việc thiết kế và tái sử dụng giao diện trở nên thuận tiện hơn.
+
+Flutter cung cấp khả năng hiển thị giao diện linh hoạt, hiệu năng tốt và hỗ trợ cơ chế hot reload trong quá trình phát triển. Cơ chế này cho phép lập trình viên xem nhanh sự thay đổi của giao diện và logic ứng dụng mà không cần biên dịch lại toàn bộ chương trình. Nhờ đó, quá trình phát triển và kiểm thử giao diện ứng dụng có thể được thực hiện nhanh chóng hơn.
+
+\subsubsection{Ứng dụng trong đồ án}
+
+Trong đồ án, Flutter được sử dụng để xây dựng ứng dụng di động cho người dùng. Ứng dụng này cung cấp các màn hình chính như đăng nhập, đăng ký, quản lý thiết bị cá nhân, kích hoạt thiết bị, xem trạng thái thiết bị, xem vị trí phương tiện, xem lịch sử dữ liệu và nhận cảnh báo trộm. Đây là các chức năng đã được phân tích trong Chương 2, đóng vai trò giúp người dùng tương tác với hệ thống một cách trực quan và thuận tiện.
+
+Flutter được lựa chọn vì phù hợp với yêu cầu xây dựng ứng dụng di động có giao diện rõ ràng, dễ sử dụng và có khả năng mở rộng. Với cơ chế phát triển dựa trên widget, các thành phần giao diện như nút bấm, biểu mẫu nhập liệu, danh sách thiết bị, màn hình bản đồ và màn hình cảnh báo có thể được tổ chức thành các thành phần riêng biệt. Điều này giúp mã nguồn ứng dụng dễ quản lý, dễ bảo trì và thuận tiện khi cần bổ sung thêm chức năng mới.
+
+Bên cạnh đó, Flutter hỗ trợ tốt việc giao tiếp với server thông qua các API. Trong hệ thống của đồ án, ứng dụng di động gửi yêu cầu đến server để thực hiện các chức năng như đăng nhập, lấy danh sách thiết bị, cập nhật thông tin thiết bị, lấy dữ liệu trạng thái và lịch sử cảnh báo. Server sau đó trả kết quả về cho ứng dụng để hiển thị cho người dùng. Cách tổ chức này giúp ứng dụng di động đóng vai trò là lớp giao diện, còn việc xử lý nghiệp vụ và lưu trữ dữ liệu được thực hiện ở phía máy chủ.
+
+\subsection{Dart}
+\label{subsection:3.dart}
+
+\subsubsection{Giới thiệu công nghệ}
+
+Dart là ngôn ngữ lập trình được sử dụng chính trong Flutter. Dart là ngôn ngữ hướng đối tượng, hỗ trợ kiểu dữ liệu tĩnh và cung cấp cú pháp tương đối rõ ràng, phù hợp cho việc phát triển ứng dụng giao diện người dùng. Dart cũng hỗ trợ lập trình bất đồng bộ thông qua các cơ chế như \textit{Future} và \textit{async/await}, giúp xử lý các tác vụ cần chờ phản hồi từ mạng hoặc từ hệ thống bên ngoài.
+
+Trong phát triển ứng dụng di động, Dart thường được sử dụng để xây dựng giao diện, xử lý dữ liệu, gọi API, quản lý trạng thái và điều khiển luồng hoạt động của ứng dụng. Khi kết hợp với Flutter, Dart giúp lập trình viên xây dựng các thành phần giao diện và xử lý logic ứng dụng trong cùng một môi trường phát triển thống nhất.
+
+\subsubsection{Ứng dụng trong đồ án}
+
+Trong đồ án, Dart được sử dụng để lập trình toàn bộ logic của ứng dụng di động. Các chức năng như xử lý đăng nhập, gửi yêu cầu kích hoạt thiết bị, lấy dữ liệu trạng thái thiết bị, hiển thị danh sách thiết bị, xử lý dữ liệu vị trí và tiếp nhận thông báo cảnh báo đều được triển khai bằng Dart.
+
+Dart được lựa chọn vì đây là ngôn ngữ chính thức của Flutter, có khả năng kết hợp chặt chẽ với hệ thống widget của Flutter và hỗ trợ tốt các thao tác bất đồng bộ. Điều này phù hợp với ứng dụng trong đồ án, vì ứng dụng cần thường xuyên gửi yêu cầu đến server, nhận dữ liệu phản hồi, cập nhật giao diện và xử lý các sự kiện từ người dùng. Nhờ cơ chế bất đồng bộ, ứng dụng có thể thực hiện các thao tác mạng mà không làm gián đoạn trải nghiệm sử dụng của người dùng.
+
+Việc sử dụng Dart cùng Flutter giúp ứng dụng di động đáp ứng các yêu cầu đã đặt ra ở Chương 2, bao gồm tính dễ sử dụng, khả năng hiển thị trạng thái thiết bị, hỗ trợ quản lý thiết bị cá nhân và nhận cảnh báo trộm. Đồng thời, cách tổ chức mã nguồn bằng các lớp, widget và service cũng giúp ứng dụng có khả năng bảo trì và mở rộng trong các giai đoạn phát triển tiếp theo.
+
+\section{Công nghệ xây dựng khối thiết bị IoT}
+\label{section:3.iot_device}
+
+Khối thiết bị IoT là thành phần được gắn trực tiếp trên phương tiện, có nhiệm vụ thu thập dữ liệu từ các cảm biến, xác định vị trí của xe và truyền dữ liệu về máy chủ. Đây là thành phần đầu vào quan trọng của hệ thống chống trộm xe, vì các dữ liệu thu thập được từ thiết bị là cơ sở để hệ thống giám sát trạng thái phương tiện và phát hiện các dấu hiệu bất thường. Trong đồ án, khối thiết bị IoT được xây dựng dựa trên vi điều khiển ESP32, module truyền thông A7680C và module định vị GPS NEO-6M.
+
+\subsection{ESP32}
+\label{subsection:3.esp32}
+
+\subsubsection{Giới thiệu công nghệ}
+
+ESP32 là một dòng vi điều khiển được sử dụng phổ biến trong các hệ thống IoT nhờ kích thước nhỏ, chi phí thấp và khả năng xử lý phù hợp với các ứng dụng nhúng. ESP32 hỗ trợ nhiều giao tiếp phần cứng như UART, SPI, I2C, ADC và GPIO, giúp kết nối với nhiều loại cảm biến và module ngoại vi khác nhau. Ngoài ra, ESP32 cũng được sử dụng rộng rãi trong các hệ thống cần thu thập dữ liệu, xử lý tín hiệu đơn giản và truyền dữ liệu đến các thành phần khác.
+
+\subsubsection{Ứng dụng trong đồ án}
+
+Trong đồ án, ESP32 đóng vai trò là bộ điều khiển trung tâm của thiết bị chống trộm gắn trên xe. ESP32 có nhiệm vụ đọc dữ liệu từ cảm biến, nhận dữ liệu vị trí từ module GPS, điều khiển quá trình gửi dữ liệu thông qua module truyền thông và quản lý trạng thái hoạt động của thiết bị. Khi thiết bị phát hiện các tín hiệu bất thường hoặc đến chu kỳ gửi dữ liệu, ESP32 sẽ tổng hợp dữ liệu cần thiết và gửi về máy chủ để xử lý.
+
+ESP32 được lựa chọn vì phù hợp với yêu cầu xây dựng thiết bị IoT chi phí thấp, nhỏ gọn và dễ lập trình. Với số lượng chân giao tiếp và khả năng kết nối ngoại vi đa dạng, ESP32 có thể kết hợp với các module như A7680C và NEO-6M trong cùng một thiết bị. Việc sử dụng ESP32 giúp hệ thống đáp ứng các yêu cầu đã đặt ra ở Chương 2, bao gồm thu thập dữ liệu cảm biến, gửi trạng thái thiết bị, cập nhật vị trí và hỗ trợ phát hiện nguy cơ trộm.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/esp32.png}
+    \caption{Vi điều khiển Esp32}
+    \label{fig:usecase-overview}
+\end{figure}
+
+
+
+\subsection{Module A7680C}
+\label{subsection:3.a7680c}
+
+\subsubsection{Giới thiệu công nghệ}
+
+A7680C là module truyền thông di động hỗ trợ kết nối mạng thông qua SIM. Module này thường được sử dụng trong các hệ thống IoT cần truyền dữ liệu từ xa mà không phụ thuộc vào mạng WiFi. Thông qua giao tiếp UART, vi điều khiển có thể điều khiển module bằng các lệnh AT để thực hiện các thao tác như kiểm tra trạng thái mạng, thiết lập kết nối Internet và truyền dữ liệu đến máy chủ.
+
+\subsubsection{Ứng dụng trong đồ án}
+
+Trong đồ án, module A7680C được sử dụng để hỗ trợ thiết bị IoT truyền dữ liệu về máy chủ thông qua mạng di động. Dữ liệu được gửi có thể bao gồm trạng thái thiết bị, dữ liệu cảm biến, dữ liệu vị trí và các thông tin liên quan đến quá trình giám sát phương tiện. Nhờ sử dụng mạng di động, thiết bị có thể hoạt động trong nhiều vị trí khác nhau mà không phụ thuộc vào phạm vi phủ sóng của WiFi.
+
+A7680C được lựa chọn vì phù hợp với bài toán chống trộm xe, trong đó phương tiện có thể di chuyển ngoài phạm vi mạng cục bộ. So với việc chỉ sử dụng WiFi, kết nối mạng di động giúp tăng tính linh hoạt và khả năng hoạt động thực tế của hệ thống. Công nghệ này hỗ trợ trực tiếp cho các yêu cầu như gửi dữ liệu cảm biến, cập nhật vị trí và gửi trạng thái thiết bị về máy chủ trong quá trình vận hành.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/a7680c.png}
+    \caption{Module A7680C}
+    \label{fig:usecase-overview}
+\end{figure}
+
+
+\subsection{Module GPS NEO-6M}
+\label{subsection:3.neo6m}
+
+\subsubsection{Giới thiệu công nghệ}
+
+NEO-6M là module định vị GPS thường được sử dụng trong các hệ thống nhúng và IoT. Module này có khả năng nhận tín hiệu từ hệ thống vệ tinh GPS để xác định vị trí của thiết bị, bao gồm các thông tin như kinh độ, vĩ độ, thời gian và một số dữ liệu định vị khác. NEO-6M giao tiếp với vi điều khiển thông qua UART, giúp việc tích hợp với các nền tảng như ESP32 tương đối thuận tiện.
+
+\subsubsection{Ứng dụng trong đồ án}
+
+Trong đồ án, module GPS NEO-6M được sử dụng để thu thập thông tin vị trí của phương tiện. Dữ liệu vị trí được ESP32 đọc từ module GPS, sau đó gửi về máy chủ thông qua module truyền thông. Máy chủ lưu trữ dữ liệu này và cung cấp cho ứng dụng di động để người dùng có thể theo dõi vị trí hiện tại hoặc vị trí gần nhất của xe.
+
+NEO-6M được lựa chọn vì có chi phí thấp, dễ sử dụng và phù hợp với mô hình thử nghiệm của hệ thống. Việc tích hợp module GPS giúp hệ thống đáp ứng yêu cầu theo dõi vị trí phương tiện đã phân tích ở Chương 2. Trong trường hợp phát hiện nguy cơ trộm, dữ liệu vị trí cũng hỗ trợ người dùng xác định vị trí của xe để có phương án xử lý kịp thời.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Hinhve/neo6m (2).png}
+    \caption{Module NEO-6M}
+    \label{fig:usecase-overview}
+\end{figure}
+
+
+\subsection{Tổng kết khối thiết bị IoT}
+\label{subsection:3.iot_summary}
+
+Sự kết hợp giữa ESP32, A7680C và NEO-6M tạo thành khối thiết bị IoT có khả năng thu thập dữ liệu, xác định vị trí và truyền dữ liệu về máy chủ. ESP32 đảm nhiệm vai trò xử lý trung tâm, A7680C đảm nhiệm vai trò truyền thông qua mạng di động, còn NEO-6M cung cấp dữ liệu định vị. Cách kết hợp này phù hợp với mục tiêu xây dựng hệ thống chống trộm xe có chi phí thấp, có khả năng hoạt động trên thiết bị thật và đáp ứng các chức năng giám sát, định vị, cảnh báo của đồ án.
+
+\end{document}
